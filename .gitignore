@@ -1,0 +1,42 @@
+# React frontend
+react-frontend/node_modules/
+react-frontend/build/
+react-frontend/dist/
+react-frontend/.env*
+react-frontend/npm-debug.log*
+react-frontend/yarn-*.log*
+
+# Flask backend
+flask-backend/__pycache__/
+flask-backend/*.py[cod]
+flask-backend/*.log
+flask-backend/instance/
+flask-backend/*.db
+flask-backend/*.sqlite3
+
+# Ignore all virtual environments (anywhere)
+**/venv/
+**/env/
+**/ENV/
+**/.venv/
+**/.env/
+**/virtualenv*/
+**/lib/
+**/Lib/
+**/Scripts/
+**/Include/
+**/bin/
+**/share/
+**/lib/python*/
+**/Lib/site-packages/
+**/pyvenv.cfg
+**/.python-version
+
+# IDE and OS files
+.idea/
+.idea/**/*
+.vscode/
+.vscode/**/*
+.DS_Store
+*.swp
+
