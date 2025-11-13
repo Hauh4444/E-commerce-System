@@ -10,7 +10,9 @@ export type Product = {
     inventory: number;
     category: string;
     images: string[];
-    attributes?: Record<string, unknown>;
+    attributes: Record<string, string>;
+    average_review: number;
+    reviews: number;
     created_at?: string;
     updated_at?: string;
 };

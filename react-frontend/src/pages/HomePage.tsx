@@ -1,5 +1,5 @@
 import { useAuth } from '@/contexts/AuthContext';
-import Header from "@/components/Header";
+import { Header } from "@/components/Header";
 
 const HomePage = () => {
     const { isAuthenticated, user } = useAuth();
@@ -9,7 +9,7 @@ const HomePage = () => {
             <Header />
             <main className="">
                 <section className="">
-                    <h1>{isAuthenticated ? `Welcome back, ${user?.email}` : 'Avento'}</h1>
+                    <h1>{isAuthenticated && `Welcome back, ${user?.email}`}</h1>
                 </section>
             </main>
         </>

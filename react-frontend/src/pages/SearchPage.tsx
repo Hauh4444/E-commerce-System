@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { type Product, getProductsRequest } from "@/api/product";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import Header from "@/components/Header";
+import { Header } from "@/components/Header";
+import { ProductCard } from "@/components/ProductCard";
 
 const SearchPage = () => {
     const [searchParams] = useSearchParams();
     const query = searchParams.get("query") || "";
-    const navigate = useNavigate();
 
     const [loading, setLoading] = useState<boolean>(false);
     const [products, setProducts] = useState<Product[] | null>(null);
@@ -24,9 +22,6 @@ const SearchPage = () => {
         try {
             const data = await getProductsRequest(query, { signal });
             setProducts(data);
-        } catch (productError) {
-            if (signal.aborted) return;
-            console.error(productError instanceof Error ? productError.message : "Error fetching products");
         } finally {
             if (!signal.aborted) setLoading(false);
         }
@@ -34,7 +29,10 @@ const SearchPage = () => {
 
     useEffect(() => {
         const controller = new AbortController();
-        fetchProducts(query, controller.signal);
+        fetchProducts(query, controller.signal).catch((productsError) => {
+            if (controller.signal.aborted) return;
+            console.error(productsError instanceof Error ? productsError.message : "Error fetching products");
+        });
 
         return () => controller.abort();
     }, [query, fetchProducts]);
@@ -43,50 +41,18 @@ const SearchPage = () => {
         <>
             <Header />
             {loading && <h2 className="text-2xl font-bold">Loading products...</h2>}
-            {products && (
-                <main className="">
-                    <ul className="w-3/4 mt-6 mx-auto space-y-6">
-                        {products.map((product) => (
-                            <li key={product.id}>
-                                <Card className="h-56 flex">
-                                    <CardHeader className="min-w-[14rem] basis-[14rem] flex justify-center items-center">
-                                        <Link to={`/product/${product.id}`} className="h-full w-full">
-                                            <figure className="h-full flex justify-center items-center">
-                                                <img
-                                                    src={`data:image/png;base64,${product.images[0]}`}
-                                                    alt={`${product.name} image`}
-                                                    className="max-w-full max-h-full object-contain"
-                                                />
-                                                <figcaption className="sr-only">{product.name} image</figcaption>
-                                            </figure>
-                                        </Link>
-                                    </CardHeader>
-
-                                    <CardContent className="flex-1 my-auto p-0 text-left">
-                                        <Link to={`/product/${product.id}`}>
-                                            <CardTitle className="mb-2 text-xl hover:text-secondary">
-                                                {product.name}
-                                            </CardTitle>
-                                        </Link>
-                                        <CardDescription className="text-lg">
-                                            ${product.price}
-                                        </CardDescription>
-                                    </CardContent>
-
-                                    <CardContent className="min-w-[14rem] basis-[14rem] p-6 flex flex-col items-center justify-end">
-                                        <Button
-                                            variant="secondary"
-                                            className="px-6 py-2 rounded-full text-base hover:opacity-80 transition-opacity"
-                                        >
-                                            ADD TO CART
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-                            </li>
-                        ))}
-                    </ul>
-                </main>
-            )}
+            <main className="w-full min-h-screen bg-gradient-subtle flex flex-col items-center justify-start absolute top-0">
+                <ul className="w-3/4 mt-20 space-y-6">
+                    <li className="mt-6 pl-4 text-xl text-left">
+                        {products ? products.length : 0} result{products && products.length != 1 && 's'} for '{query}':
+                    </li>
+                    {products && products.map((product) => (
+                        <li key={product.id}>
+                            <ProductCard variant="search" product={product} />
+                        </li>
+                    ))}
+                </ul>
+            </main>
         </>
     );
 };

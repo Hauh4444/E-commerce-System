@@ -60,6 +60,8 @@ def create_product():
             "category": payload.get("category"),
             "images": payload.get("images", []),
             "attributes": payload.get("attributes", {}),
+            "average_review": 0,
+            "reviews": 0
         }
     )
 

@@ -17,7 +17,7 @@ const AuthPage = () => {
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
 
-    const handleLogin = async (e: FormEvent) => {
+    const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         await login(email, password);
@@ -37,7 +37,7 @@ const AuthPage = () => {
         }
     };
 
-    const handleRegister = async (e: FormEvent) => {
+    const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         await register(email, password, name);
@@ -58,7 +58,7 @@ const AuthPage = () => {
     };
 
     return (
-        <main className="min-h-screen bg-gradient-subtle flex items-center justify-center">
+        <main className="w-full min-h-screen bg-gradient-subtle flex items-center justify-center">
             <Card className="w-full max-w-md mx-auto">
                 <CardHeader className="text-center">
                     <CardTitle>Welcome</CardTitle>

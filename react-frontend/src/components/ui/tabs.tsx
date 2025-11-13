@@ -1,4 +1,4 @@
-import { forwardRef, type ComponentPropsWithoutRef, type ForwardedRef } from "react";
+import { forwardRef, type ComponentPropsWithoutRef, type ForwardedRef, type ComponentRef } from "react";
 import { Root as TabsRoot, List as TabsListPrimitive, Trigger as TabsTriggerPrimitive, Content as TabsContentPrimitive } from "@radix-ui/react-tabs";
 
 import { cn } from "@/lib/utils";
@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 const Tabs = TabsRoot;
 
 const TabsList = forwardRef<
-    HTMLDivElement,
+    ComponentRef<typeof TabsListPrimitive>,
     ComponentPropsWithoutRef<typeof TabsListPrimitive>
 >(({ className, ...props }, ref: ForwardedRef<HTMLDivElement>) => (
     <TabsListPrimitive
@@ -21,7 +21,7 @@ const TabsList = forwardRef<
 TabsList.displayName = TabsListPrimitive.displayName;
 
 const TabsTrigger = forwardRef<
-    HTMLButtonElement,
+    ComponentRef<typeof TabsTriggerPrimitive>,
     ComponentPropsWithoutRef<typeof TabsTriggerPrimitive>
 >(({ className, ...props }, ref: ForwardedRef<HTMLButtonElement>) => (
     <TabsTriggerPrimitive
@@ -36,7 +36,7 @@ const TabsTrigger = forwardRef<
 TabsTrigger.displayName = TabsTriggerPrimitive.displayName;
 
 const TabsContent = forwardRef<
-    HTMLDivElement,
+    ComponentRef<typeof TabsContentPrimitive>,
     ComponentPropsWithoutRef<typeof TabsContentPrimitive>
 >(({ className, ...props }, ref: ForwardedRef<HTMLDivElement>) => (
     <TabsContentPrimitive

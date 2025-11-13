@@ -2,7 +2,7 @@ import { type PropsWithChildren, useState, useEffect, useCallback, useMemo } fro
 import { registerRequest, loginRequest, type RegisterResponse, type LoginResponse } from "@/api/auth";
 import { AuthContext, type AuthContextValue } from "./AuthContext";
 
-const AUTH_STORAGE_KEY = "commerce_ui_auth";
+const AUTH_STORAGE_KEY = "avento_auth";
 
 type StoredAuth = {
     token: string;
