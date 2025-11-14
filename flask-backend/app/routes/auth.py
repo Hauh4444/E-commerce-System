@@ -1,87 +1,34 @@
 from http import HTTPStatus
+from datetime import datetime
 
 from flask import Blueprint, jsonify, request
 from werkzeug.security import check_password_hash, generate_password_hash
+from pydantic import BaseModel, EmailStr, constr, ValidationError
 
-from ..extensions import mongo_client
+from ..extensions import get_db
 from ..services.jwt_tokens import create_access_token
 from ..utils import serialize_document
 
 auth_bp = Blueprint("auth", __name__)
 
 
-@auth_bp.post("/register")
-def register():
-    payload = request.get_json(force=True, silent=False) or {}
-    required_fields = {"name", "email", "password"}
-    if not required_fields.issubset(payload):
-        return (
-            {
-                "error": "missing_fields",
-                "details": f"Required fields: {', '.join(sorted(required_fields))}",
-            },
-            HTTPStatus.BAD_REQUEST,
-        )
-
-    db = mongo_client.get_db()
-    email = payload["email"].lower()
-    if db.users.find_one({"email": email}):
-        return {"error": "email_in_use"}, HTTPStatus.CONFLICT
-
-    user_data = {
-        "name": payload["name"],
-        "email": email,
-        "password_hash": generate_password_hash(payload["password"]),
-        "role": payload.get("role", "customer"),
-        "created_at": payload.get("created_at"),
-    }
-    insert_result = db.users.insert_one(user_data)
-    user_doc = db.users.find_one({"_id": insert_result.inserted_id})
-
-    access_token = create_access_token(
-        subject=str(user_doc["_id"]),
-        claims={"email": user_doc["email"], "role": user_doc.get("role", "customer")},
-    )
-
-    response_body = {
-        "access_token": access_token,
-        "token_type": "Bearer",
-        "user": serialize_document(
-            {
-                "_id": user_doc["_id"],
-                "name": user_doc["name"],
-                "email": user_doc["email"],
-                "role": user_doc.get("role", "customer"),
-            }
-        ),
-    }
-    return jsonify(response_body), HTTPStatus.CREATED
+class RegisterSchema(BaseModel):
+    name: constr(min_length=1)
+    email: EmailStr
+    password: constr(min_length=8)
 
 
-@auth_bp.post("/login")
-def login():
-    payload = request.get_json(force=True, silent=False) or {}
-    required_fields = {"email", "password"}
-    if not required_fields.issubset(payload):
-        return (
-            {
-                "error": "missing_fields",
-                "details": f"Required fields: {', '.join(sorted(required_fields))}",
-            },
-            HTTPStatus.BAD_REQUEST,
-        )
+class LoginSchema(BaseModel):
+    email: EmailStr
+    password: constr(min_length=8)
 
-    db = mongo_client.get_db()
-    email = payload["email"].lower()
-    user = db.users.find_one({"email": email})
-    if not user or not check_password_hash(user["password_hash"], payload["password"]):
-        return {"error": "invalid_credentials"}, HTTPStatus.UNAUTHORIZED
 
+def generate_user_response(user):
     access_token = create_access_token(
         subject=str(user["_id"]),
         claims={"email": user["email"], "role": user.get("role", "customer")},
     )
-    response_body = {
+    return {
         "access_token": access_token,
         "token_type": "Bearer",
         "user": serialize_document(
@@ -89,9 +36,61 @@ def login():
                 "_id": user["_id"],
                 "name": user["name"],
                 "email": user["email"],
-                "role": user.get("role", "customer")
+                "role": user.get("role", "customer"),
             }
         ),
     }
-    return jsonify(response_body), HTTPStatus.OK
 
+
+@auth_bp.post("/register")
+def register():
+    payload = request.get_json()
+    if payload is None:
+        return {"error": "invalid_json"}, HTTPStatus.BAD_REQUEST
+
+    try:
+        data = RegisterSchema(**payload)
+    except ValidationError as e:
+        return {"error": "invalid_payload", "details": e.errors()}, HTTPStatus.BAD_REQUEST
+
+    db = get_db()
+    email = str(data.email).lower()
+
+    if db.users.find_one({"email": email}):
+        return {"error": "email_in_use"}, HTTPStatus.CONFLICT
+
+    user_data = {
+        "name": data.name,
+        "email": email,
+        "password_hash": generate_password_hash(data.password),
+        "role": "customer",
+        "created_at": datetime.now(),
+    }
+
+    insert_result = db.users.insert_one(user_data)
+    user_doc = db.users.find_one({"_id": insert_result.inserted_id})
+
+    response_body = generate_user_response(user_doc)
+    return jsonify(response_body), HTTPStatus.CREATED
+
+
+@auth_bp.post("/login")
+def login():
+    payload = request.get_json()
+    if payload is None:
+        return {"error": "invalid_json"}, HTTPStatus.BAD_REQUEST
+
+    try:
+        data = LoginSchema(**payload)
+    except ValidationError as e:
+        return {"error": "invalid_payload", "details": e.errors()}, HTTPStatus.BAD_REQUEST
+
+    db = get_db()
+    email = str(data.email).lower()
+    user = db.users.find_one({"email": email})
+
+    if not user or not check_password_hash(user["password_hash"], data.password):
+        return {"error": "invalid_credentials"}, HTTPStatus.UNAUTHORIZED
+
+    response_body = generate_user_response(user)
+    return jsonify(response_body), HTTPStatus.OK

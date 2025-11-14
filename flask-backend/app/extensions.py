@@ -5,25 +5,39 @@ from pymongo import MongoClient
 from pymongo.database import Database
 
 
-class MongoClientWrapper:
-    """Provides access to MongoDB within the Flask app context."""
+def init_mongo(app: Flask) -> None:
+    """
+    Initialize MongoDB support for a Flask application.
 
-    def init_app(self, app: Flask) -> None:
-        @app.teardown_appcontext
-        def close_connection(_: Optional[BaseException]) -> None:
-            client: Optional[MongoClient] = g.pop("mongo_client", None)
-            if client is not None:
-                client.close()
+    Registers a teardown function to close the MongoClient when the app context ends.
 
-    def get_db(self, app: Optional[Flask] = None) -> Database:
-        flask_app = app or current_app
-        if "mongo_client" not in g:
-            g.mongo_client = MongoClient(flask_app.config["MONGO_URI"])
-        if "mongo_db" not in g:
-            g.mongo_db = g.mongo_client[flask_app.config["MONGO_DB"]]
-        return g.mongo_db
+    Args:
+        app (Flask): The Flask application instance.
+    """
+
+    @app.teardown_appcontext
+    def close_connection(_: Optional[BaseException] = None) -> None:
+        client: Optional[MongoClient] = g.pop("mongo_client", None)
+        if client is not None:
+            client.close()
 
 
-mongo_client = MongoClientWrapper()
+def get_db(app: Optional[Flask] = None) -> Database:
+    """
+    Get the MongoDB database instance for the current request context.
 
+    Args:
+        app (Optional[Flask]): Flask application instance. If not provided, uses `current_app`.
 
+    Returns:
+        Database: The MongoDB database instance.
+    """
+    flask_app = app or current_app
+
+    if g.get("mongo_client") is None:
+        g.mongo_client = MongoClient(flask_app.config["MONGO_URI"])
+
+    if g.get("mongo_db") is None:
+        g.mongo_db = g.mongo_client[flask_app.config["MONGO_DB"]]
+
+    return g.mongo_db

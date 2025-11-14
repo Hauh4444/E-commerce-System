@@ -108,7 +108,7 @@ const ProductCard = forwardRef<
                                 {product.quantity === 1 ? <Trash /> : <Minus />}
                             </Button>
                             <Input
-                                id="product_quantity"
+                                id={`product_quantity_${product.id}`}
                                 className="w-16 h-11 p-4 border-border rounded-none !text-base text-center opacity-80 focus-visible:opacity-100"
                                 type="text"
                                 placeholder="Search"

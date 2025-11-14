@@ -1,3 +1,4 @@
+import { createCheckoutSessionForCart } from "@/api/payments";
 import { useCart } from '@/contexts/CartContext';
 import { Header } from "@/components/Header";
 import { ProductCard } from "@/components/ProductCard";
@@ -6,9 +7,20 @@ import { Button } from "@/components/ui/button";
 const CartPage = () => {
     const { items, totalItems, totalPrice, clearCart } = useCart();
 
-    const handleCheckout = () => {
-        return;
-    }
+    const handleCheckout = async () => {
+        if (!items || items.length === 0) return;
+
+        try {
+            const session = await createCheckoutSessionForCart(items);
+            if (session.url) {
+                window.location.href = session.url;
+            } else {
+                console.error("Checkout session failed", session);
+            }
+        } catch (err) {
+            console.error("Error during checkout:", err);
+        }
+    };
 
     return (
         <>
