@@ -20,7 +20,7 @@ const SearchPage = () => {
         setLoading(true);
 
         try {
-            const data = await getProductsRequest(query, { signal });
+            const data = await getProductsRequest({ query }, { signal });
             setProducts(data);
         } finally {
             if (!signal.aborted) setLoading(false);
@@ -40,17 +40,22 @@ const SearchPage = () => {
     return (
         <>
             <Header />
-            {loading && <h2 className="text-2xl font-bold">Loading products...</h2>}
             <main className="w-full min-h-screen bg-gradient-subtle flex flex-col items-center justify-start absolute top-0">
-                <ul className="w-3/4 mt-20 space-y-6">
+                <ul className="w-3/4 mt-20 mb-8 space-y-6">
                     <li className="mt-6 pl-4 text-xl text-left">
                         {products ? products.length : 0} result{products && products.length != 1 && 's'} for '{query}':
                     </li>
-                    {products && products.map((product) => (
-                        <li key={product.id}>
-                            <ProductCard variant="search" product={product} />
-                        </li>
-                    ))}
+                    {loading ? (
+                        <h2 className="text-2xl font-bold">Loading products...</h2>
+                    ) : (
+                        <>
+                            {products && products.map((product) => (
+                                <li key={product.id}>
+                                    <ProductCard variant="search" product={product} />
+                                </li>
+                            ))}
+                        </>
+                    )}
                 </ul>
             </main>
         </>

@@ -26,7 +26,7 @@ const CartPage = () => {
         <>
             <Header />
             <main className="w-full min-h-screen bg-gradient-subtle flex flex-col items-center justify-start absolute top-0">
-                <ul className="w-3/4 mt-20 mx-auto space-y-6">
+                <ul className="w-3/4 mt-20 mb-8 mx-auto space-y-6">
                     {items && totalItems > 0 ? (
                         <>
                             <li className="mt-6 pl-4 text-xl text-left">

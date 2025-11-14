@@ -1,14 +1,12 @@
 from http import HTTPStatus
 from datetime import datetime
 
-from bson import ObjectId
 from flask import Blueprint, jsonify, request
 from pymongo.errors import PyMongoError
 from pydantic import BaseModel, Field, constr, confloat, conint, ValidationError
-from bson.errors import InvalidId
 
 from ..extensions import get_db
-from ..utils import serialize_document, serialize_id
+from ..utils import error_response, parse_object_id, serialize_document, serialize_id
 
 products_bp = Blueprint("products", __name__)
 
@@ -35,24 +33,11 @@ class ProductUpdateSchema(BaseModel):
     attributes: dict | None = None
 
 
-def parse_object_id(oid: str):
-    try:
-        return ObjectId(oid)
-    except InvalidId:
-        return None
-
-
-def error_response(error: str, status: HTTPStatus = HTTPStatus.BAD_REQUEST, details=None):
-    body = {"error": error}
-    if details:
-        body["details"] = details
-    return jsonify(body), status
-
-
 @products_bp.get("/", strict_slashes=False)
 def list_products():
     db = get_db()
     query_param = request.args.get("query", "").strip()
+    ids_param = request.args.get("ids", "").strip()
     try:
         limit = int(request.args.get("limit", 50))
     except ValueError:
@@ -60,7 +45,15 @@ def list_products():
 
     try:
         mongo_query = {}
-        if query_param:
+
+        if ids_param:
+            ids_list = [parse_object_id(pid) for pid in ids_param.split(",")]
+            ids_list = [i for i in ids_list if i]
+            if not ids_list:
+                return error_response("no_valid_ids_provided", HTTPStatus.BAD_REQUEST)
+            mongo_query["_id"] = {"$in": ids_list}
+
+        elif query_param:
             mongo_query["name"] = {"$regex": query_param, "$options": "i"}
 
         products_cursor = db.products.find(mongo_query).sort("created_at", -1).limit(limit)

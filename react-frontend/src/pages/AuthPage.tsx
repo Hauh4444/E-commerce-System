@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLists } from "@/contexts/ListsContext";
 import { useToast } from "@/contexts/ToastContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ const AuthPage = () => {
     const navigate = useNavigate();
     const { toast } = useToast();
     const { register, login, loading, error } = useAuth();
+    const { fetchLists } = useLists();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -33,6 +35,7 @@ const AuthPage = () => {
                 title: "Success",
                 description: "Welcome back!",
             });
+            await fetchLists();
             navigate("/");
         }
     };
@@ -53,6 +56,7 @@ const AuthPage = () => {
                 title: "Success",
                 description: "Account created! Go ahead and Login.",
             });
+            await fetchLists();
             navigate("/");
         }
     };

@@ -35,7 +35,7 @@ export type LoginPayload = {
 
 export const registerRequest = async (
     payload: RegisterPayload
-): Promise<LoginResponse> => {
+): Promise<RegisterResponse> => {
     const response = await fetch(`${apiConfig.baseUrl}${apiConfig.endpoints.register}`, {
         method: 'POST',
         headers: {

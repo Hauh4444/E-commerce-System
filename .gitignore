@@ -14,23 +14,23 @@ flask-backend/instance/
 flask-backend/*.db
 flask-backend/*.sqlite3
 
-# Ignore all virtual environments (anywhere)
-**/venv/
-**/env/
-**/ENV/
-**/.venv/
-**/.env/
-**/virtualenv*/
-**/lib/
-**/Lib/
-**/Scripts/
-**/Include/
-**/bin/
-**/share/
-**/lib/python*/
-**/Lib/site-packages/
-**/pyvenv.cfg
-**/.python-version
+# Ignore all virtual environments
+flask-backend/*/venv/
+flask-backend/*/env/
+flask-backend/*/ENV/
+flask-backend/*/.venv/
+flask-backend/*/.env/
+flask-backend/*/virtualenv*/
+flask-backend/*/lib/
+flask-backend/*/Lib/
+flask-backend/*/Scripts/
+flask-backend/*/Include/
+flask-backend/*/bin/
+flask-backend/*/share/
+flask-backend/*/lib/python*/
+flask-backend/*/Lib/site-packages/
+flask-backend/*/pyvenv.cfg
+flask-backend/*/.python-version
 
 # IDE and OS files
 .idea/

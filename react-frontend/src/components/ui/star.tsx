@@ -1,23 +1,8 @@
 import { forwardRef, type ComponentPropsWithoutRef, type ForwardedRef } from "react";
 import { Star as StarIcon, StarHalf as StarHalfIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { cva, type VariantProps } from "class-variance-authority";
-
-const starVariants = cva(
-    "cursor-pointer transition-colors",
-    {
-        variants: {
-            variant: {
-                full: "fill-yellow-400 text-yellow-400",
-                half: "fill-yellow-400 text-yellow-400",
-                empty: "text-muted-foreground",
-            },
-        },
-        defaultVariants: {
-            variant: "empty",
-        },
-    }
-);
+import { type VariantProps } from "class-variance-authority";
+import { starVariants } from "./variants/star"
 
 const Star = forwardRef<
     SVGSVGElement,

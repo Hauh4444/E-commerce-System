@@ -6,6 +6,7 @@ from flask import Blueprint, request, jsonify
 from pydantic import BaseModel, ValidationError, constr, confloat, conint
 
 from ..config import Config
+from ..utils import error_response
 
 payments_bp = Blueprint("payments", __name__)
 
@@ -21,13 +22,6 @@ class CheckoutItem(BaseModel):
 
 class CheckoutSessionSchema(BaseModel):
     items: List[CheckoutItem]
-
-
-def error_response(error: str, status: HTTPStatus = HTTPStatus.BAD_REQUEST, details=None):
-    body = {"error": error}
-    if details:
-        body["details"] = details
-    return jsonify(body), status
 
 
 @payments_bp.route("/create-checkout-session", methods=["POST"])

@@ -1,6 +1,6 @@
 import { forwardRef, type HTMLAttributes, type ForwardedRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Settings, User, LogOut, ShoppingCart } from "lucide-react";
+import { Search, Settings, User, LogOut, List, ShoppingCart } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/contexts/ToastContext";
@@ -11,7 +11,7 @@ import { Badge } from "./ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "./ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
-export interface HeaderProps extends HTMLAttributes<HTMLElement> {}
+export type HeaderProps = HTMLAttributes<HTMLElement>
 
 const Header = forwardRef<HTMLElement, HeaderProps>((props, ref: ForwardedRef<HTMLElement>) => {
     const navigate = useNavigate();
@@ -80,6 +80,16 @@ const Header = forwardRef<HTMLElement, HeaderProps>((props, ref: ForwardedRef<HT
                                 variant="ghost"
                                 size="icon"
                                 className="relative"
+                                onClick={() => navigate("/lists")}
+                                title="Lists"
+                            >
+                                <List className="h-5 w-5" />
+                            </Button>
+
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="relative"
                                 onClick={() => navigate("/cart")}
                                 title="Cart"
                             >
@@ -98,7 +108,7 @@ const Header = forwardRef<HTMLElement, HeaderProps>((props, ref: ForwardedRef<HT
                                 <DropdownMenuTrigger asChild>
                                     <Button
                                         variant="ghost"
-                                        className="relative h-10 w-10 rounded-full"
+                                        className="ml-2 relative h-10 w-10 rounded-full"
                                         type="button"
                                         aria-label="User menu"
                                         aria-haspopup="true"

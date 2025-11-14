@@ -1,7 +1,47 @@
 from datetime import date, datetime
-from typing import Any, Dict, List, Optional, Union
+from http import HTTPStatus
+from flask import jsonify
+from typing import Any, Dict, Optional, Union
 
 from bson import ObjectId
+from bson.errors import InvalidId
+
+
+def error_response(error: str, status: HTTPStatus = HTTPStatus.BAD_REQUEST, details: Any = None):
+    """
+    Return a standardized JSON error response.
+
+    Args:
+        error (str): Error code or message.
+        status (HTTPStatus, optional): HTTP status code. Defaults to 400 Bad Request.
+        details (Any, optional): Additional details to include in the response.
+
+    Returns:
+        Tuple[Response, int]: Flask JSON response and HTTP status code.
+    """
+    body = {"error": error}
+    if details:
+        body["details"] = details
+    return jsonify(body), status
+
+
+def parse_object_id(oid: str) -> Optional[ObjectId]:
+    """
+    Convert a string to a MongoDB ObjectId.
+
+    This function attempts to create a `bson.ObjectId` from the given string.
+    If the string is not a valid ObjectId, the function returns `None`.
+
+    Args:
+        oid (str): The string representation of the ObjectId to parse.
+
+    Returns:
+        Optional[ObjectId]: The corresponding ObjectId if valid, otherwise None.
+    """
+    try:
+        return ObjectId(oid)
+    except InvalidId:
+        return None
 
 
 def serialize_id(value: Union[ObjectId, str, None]) -> Optional[str]:

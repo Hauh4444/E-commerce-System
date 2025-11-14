@@ -7,6 +7,7 @@ export const apiConfig = {
         register: '/auth/register',
         products: '/products',
         payments: '/payments',
+        lists: '/lists',
     },
 };
 

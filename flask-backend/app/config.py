@@ -15,8 +15,11 @@ class Config:
     MONGO_URI: str = os.getenv("MONGO_URI", "mongodb://localhost:27017")
     MONGO_DB: str = os.getenv("MONGO_DB", "ecommerce")
 
+    REDIS_HOST: str = os.getenv("REDIS_HOST", "localhost")
+    REDIS_PORT: str = os.getenv("REDIS_PORT", 6379)
+
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", SECRET_KEY)
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
-    JWT_ACCESS_EXPIRES_MINUTES: int = int(os.getenv("JWT_ACCESS_EXPIRES_MINUTES", "60"))
+    JWT_ACCESS_EXPIRES_MINUTES: int = int(os.getenv("JWT_ACCESS_EXPIRES_MINUTES", "43200"))
 
     STRIPE_SECRET_KEY: str = os.getenv("STRIPE_SECRET_KEY", "change-me")

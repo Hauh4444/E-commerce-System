@@ -1,31 +1,7 @@
 import { type PropsWithChildren, useState, useEffect, useCallback, useMemo } from "react";
 import { registerRequest, loginRequest, type RegisterResponse, type LoginResponse } from "@/api/auth";
 import { AuthContext, type AuthContextValue } from "./AuthContext";
-
-const AUTH_STORAGE_KEY = "avento_auth";
-
-type StoredAuth = {
-    token: string;
-    user: LoginResponse['user'];
-};
-
-const loadStoredAuth = (): StoredAuth | null => {
-    try {
-        const raw = localStorage.getItem(AUTH_STORAGE_KEY);
-        if (!raw) return null;
-        return JSON.parse(raw) as StoredAuth;
-    } catch {
-        return null;
-    }
-};
-
-const persistAuth = (auth: StoredAuth | null) => {
-    if (!auth) {
-        localStorage.removeItem(AUTH_STORAGE_KEY);
-        return;
-    }
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(auth));
-};
+import { loadAuth, saveAuth, type StoredAuth } from "@/utils/authStorage";
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
     const [token, setToken] = useState<string | null>(null);
@@ -34,7 +10,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const stored = loadStoredAuth();
+        const stored = loadAuth();
         if (stored) {
             setToken(stored.token);
             setUser(stored.user);
@@ -48,12 +24,12 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
             const response: RegisterResponse = await registerRequest({ email, password, name });
             setToken(response.access_token);
             setUser(response.user);
-            persistAuth({ token: response.access_token, user: response.user });
+            saveAuth({ token: response.access_token, user: response.user });
         } catch (authError) {
             setError(authError instanceof Error ? authError.message : "Unable to register");
             setToken(null);
             setUser(null);
-            persistAuth(null);
+            saveAuth(null);
             throw authError;
         } finally {
             setLoading(false);
@@ -67,12 +43,12 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
             const response: LoginResponse = await loginRequest({ email, password });
             setToken(response.access_token);
             setUser(response.user);
-            persistAuth({ token: response.access_token, user: response.user });
+            saveAuth({ token: response.access_token, user: response.user });
         } catch (authError) {
             setError(authError instanceof Error ? authError.message : "Unable to login");
             setToken(null);
             setUser(null);
-            persistAuth(null);
+            saveAuth(null);
             throw authError;
         } finally {
             setLoading(false);
@@ -82,7 +58,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     const logout = useCallback(() => {
         setToken(null);
         setUser(null);
-        persistAuth(null);
+        saveAuth(null);
     }, []);
 
     const clearError = useCallback(() => setError(null), []);

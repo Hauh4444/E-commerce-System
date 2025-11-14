@@ -30,12 +30,33 @@ export type CreateProductPayload = {
     attributes?: Record<string, unknown>;
 };
 
+export type ProductsRequestByQuery = {
+    query: string;
+    ids?: never;
+};
+
+export type ProductsRequestByIds = {
+    ids: string[];
+    query?: never;
+};
+
+export type ProductsRequestParams = ProductsRequestByQuery | ProductsRequestByIds;
+
 export const getProductsRequest = async (
-    query?: string,
+    params: ProductsRequestParams,
     options?: { signal?: AbortSignal }
 ): Promise<ProductsResponse> => {
     const url = new URL(`${apiConfig.baseUrl}${apiConfig.endpoints.products}`);
-    if (query) url.searchParams.append("query", query);
+
+    if ("ids" in params) {
+        const ids = params.ids ?? [];
+        if (ids.length === 0) return [];
+        url.searchParams.append("ids", ids.join(","));
+    } else if ("query" in params) {
+        url.searchParams.append("query", params.query);
+    } else {
+        throw new Error("Must provide either 'query' or 'ids'");
+    }
 
     const response = await fetch(url.toString(), {
         method: "GET",
@@ -58,7 +79,9 @@ export const getProductsRequest = async (
     return (await response.json()) as ProductsResponse;
 };
 
-export const getProductByIdRequest = async (id: string): Promise<Product> => {
+export const getProductByIdRequest = async (
+    id: string
+): Promise<Product> => {
     const response = await fetch(`${apiConfig.baseUrl}${apiConfig.endpoints.products}/${id}`, {
         method: 'GET',
         headers: {
@@ -128,7 +151,9 @@ export const updateProductRequest = async (
     return await response.json() as Promise<Product>;
 };
 
-export const deleteProductRequest = async (id: string): Promise<{ deleted: boolean; product_id: string }> => {
+export const deleteProductRequest = async (
+    id: string
+): Promise<{ deleted: boolean; product_id: string }> => {
     const response = await fetch(`${apiConfig.baseUrl}${apiConfig.endpoints.products}/${id}`, {
         method: 'DELETE',
         headers: {
