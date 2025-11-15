@@ -52,6 +52,7 @@ def create_checkout_session():
             mode="payment",
             success_url=f"{FRONTEND_URL}/?checkout_complete=true",
             cancel_url=f"{FRONTEND_URL}/cart",
+            locale="en",
         )
         return jsonify({"url": session.url}), HTTPStatus.CREATED
     except stripe.error.StripeError as e:

@@ -17,7 +17,8 @@ import {
     ItemIndicator,
 } from "@radix-ui/react-dropdown-menu";
 import { Check, ChevronRight, Circle } from "lucide-react";
-import { cn } from "@/lib/utils";
+
+import { cn } from "@/utils/cn";
 
 const DropdownMenuSubTrigger = forwardRef<
     ComponentRef<typeof DropdownMenuSubTriggerPrimitive>,

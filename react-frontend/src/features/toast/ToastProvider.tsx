@@ -1,6 +1,8 @@
 import { useState, useEffect, type ReactNode, type FC } from "react";
+
 import { ToastContext, type ToastContextValue } from "./ToastContext";
-import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
+
+import { type ToastActionElement, type ToastProps } from "@/components/ui/toast";
 
 export const TOAST_LIMIT = 1;
 export const TOAST_REMOVE_DELAY = 1000000;

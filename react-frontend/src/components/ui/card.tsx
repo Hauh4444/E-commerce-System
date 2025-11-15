@@ -1,11 +1,12 @@
 import { forwardRef, type HTMLAttributes, type ForwardedRef } from "react";
-import { cn } from "@/lib/utils";
+
+import { cn } from "@/utils/cn";
 
 const Card = forwardRef<
     HTMLDivElement,
     HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref: ForwardedRef<HTMLDivElement>) => (
-    <div
+    <article
         ref={ref}
         className={cn("rounded-lg border bg-card text-card-foreground shadow-sm", className)}
         {...props}
@@ -17,7 +18,7 @@ const CardHeader = forwardRef<
     HTMLDivElement,
     HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref: ForwardedRef<HTMLDivElement>) => (
-    <div
+    <header
         ref={ref}
         className={cn("flex flex-col space-y-1.5 p-6", className)}
         {...props}
@@ -53,7 +54,7 @@ const CardContent = forwardRef<
     HTMLDivElement,
     HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref: ForwardedRef<HTMLDivElement>) => (
-    <div
+    <section
         ref={ref}
         className={cn("p-6 pt-0", className)}
         {...props}
@@ -65,7 +66,7 @@ const CardFooter = forwardRef<
     HTMLDivElement,
     HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref: ForwardedRef<HTMLDivElement>) => (
-    <div
+    <footer
         ref={ref}
         className={cn("flex items-center p-6 pt-0", className)}
         {...props}

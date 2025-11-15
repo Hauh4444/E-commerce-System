@@ -1,4 +1,5 @@
 import { type PropsWithChildren, useState, useMemo, useCallback, useEffect } from "react";
+
 import { CartContext, type CartContextValue, type CartItem } from "./CartContext";
 
 const CART_STORAGE_KEY = "avento_cart";

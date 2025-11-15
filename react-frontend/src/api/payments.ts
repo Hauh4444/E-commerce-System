@@ -1,5 +1,6 @@
 import { apiConfig } from '@/config';
-import { type CartItem } from '@/contexts/CartContext';
+
+import { type CartItem } from '@/features/cart/CartContext';
 
 export type CheckoutItem = {
     product_name: string;

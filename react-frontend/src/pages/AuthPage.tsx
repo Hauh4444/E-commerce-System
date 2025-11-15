@@ -1,8 +1,10 @@
 import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { useLists } from "@/contexts/ListsContext";
-import { useToast } from "@/contexts/ToastContext";
+
+import { useAuth } from "@/features/auth/useAuth";
+import { useLists } from "@/features/lists/useLists";
+import { useToast } from "@/features/toast/useToast";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -79,7 +81,7 @@ const AuthPage = () => {
 
                         <TabsContent value="login" className="space-y-4">
                             <form onSubmit={handleLogin} className="space-y-4">
-                                <div className="space-y-2 text-left">
+                                <fieldset className="space-y-2 text-left">
                                     <Label className="ml-2" htmlFor="login-email">Email</Label>
                                     <Input
                                         id="login-email"
@@ -89,8 +91,8 @@ const AuthPage = () => {
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
                                     />
-                                </div>
-                                <div className="space-y-2 text-left">
+                                </fieldset>
+                                <fieldset className="space-y-2 text-left">
                                     <Label className="ml-2" htmlFor="login-password">Password</Label>
                                     <Input
                                         id="login-password"
@@ -100,8 +102,13 @@ const AuthPage = () => {
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
                                     />
-                                </div>
-                                <Button type="submit" className="w-full" disabled={loading}>
+                                </fieldset>
+                                <Button
+                                    className="w-full"
+                                    disabled={loading}
+                                    type="submit"
+                                    title="Login"
+                                >
                                     {loading ? "Logging in..." : "Login"}
                                 </Button>
                             </form>
@@ -109,7 +116,7 @@ const AuthPage = () => {
 
                         <TabsContent value="register" className="space-y-4">
                             <form onSubmit={handleRegister} className="space-y-4">
-                                <div className="space-y-2 text-left">
+                                <fieldset className="space-y-2 text-left">
                                     <Label className="ml-2" htmlFor="register-name">Full Name</Label>
                                     <Input
                                         id="register-name"
@@ -119,8 +126,8 @@ const AuthPage = () => {
                                         onChange={(e) => setName(e.target.value)}
                                         required
                                     />
-                                </div>
-                                <div className="space-y-2 text-left">
+                                </fieldset>
+                                <fieldset className="space-y-2 text-left">
                                     <Label className="ml-2" htmlFor="register-email">Email</Label>
                                     <Input
                                         id="register-email"
@@ -130,8 +137,8 @@ const AuthPage = () => {
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
                                     />
-                                </div>
-                                <div className="space-y-2 text-left">
+                                </fieldset>
+                                <fieldset className="space-y-2 text-left">
                                     <Label className="ml-2" htmlFor="register-password">Password</Label>
                                     <Input
                                         id="register-password"
@@ -141,8 +148,13 @@ const AuthPage = () => {
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
                                     />
-                                </div>
-                                <Button type="submit" className="w-full" disabled={loading}>
+                                </fieldset>
+                                <Button
+                                    className="w-full"
+                                    disabled={loading}
+                                    type="submit"
+                                    title="Create account"
+                                >
                                     {loading ? "Creating account..." : "Create Account"}
                                 </Button>
                             </form>

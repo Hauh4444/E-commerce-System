@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useEffect, type PropsWithChildren } from "react";
+
 import {
     getListsRequest,
     createListRequest,
@@ -9,8 +10,9 @@ import {
     type List,
     type ListsResponse,
 } from "@/api/lists";
+
 import { ListsContext, type ListsContextValue } from "./ListsContext";
-import { loadLists, saveLists } from "@/utils/listsStorage";
+import { loadLists, saveLists } from "./listsStorage";
 
 export const ListsProvider = ({ children }: PropsWithChildren) => {
     const [lists, setLists] = useState<List[]>([]);
@@ -47,6 +49,7 @@ export const ListsProvider = ({ children }: PropsWithChildren) => {
                 saveLists(updated);
                 return updated;
             });
+            return created;
         } catch (listsError) {
             setError(listsError instanceof Error ? listsError.message : "Unable to create list");
             throw listsError;
@@ -65,6 +68,7 @@ export const ListsProvider = ({ children }: PropsWithChildren) => {
                 saveLists(updatedLists);
                 return updatedLists;
             });
+            return updated;
         } catch (listsError) {
             setError(listsError instanceof Error ? listsError.message : "Unable to update list");
             throw listsError;

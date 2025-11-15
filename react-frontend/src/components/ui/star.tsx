@@ -1,8 +1,10 @@
 import { forwardRef, type ComponentPropsWithoutRef, type ForwardedRef } from "react";
 import { Star as StarIcon, StarHalf as StarHalfIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { type VariantProps } from "class-variance-authority";
-import { starVariants } from "./variants/star"
+
+import { cn } from "@/utils/cn";
+
+import { starVariants } from "./variants"
 
 const Star = forwardRef<
     SVGSVGElement,

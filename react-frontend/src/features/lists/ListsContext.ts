@@ -1,4 +1,5 @@
-import { createContext, useContext } from "react";
+import { createContext } from "react";
+
 import type { List } from "@/api/lists";
 
 export type ListsContextValue = {
@@ -7,8 +8,8 @@ export type ListsContextValue = {
     error: string | null;
 
     fetchLists: () => Promise<void>;
-    createList: (name: string) => Promise<void>;
-    updateList: (id: string, name: string) => Promise<void>;
+    createList: (name: string) => Promise<List>;
+    updateList: (id: string, name: string) => Promise<List>;
     addProductToList: (listId: string, productId: string) => Promise<List>;
     removeProductFromList: (listId: string, productId: string) => Promise<List>;
     deleteList: (id: string) => Promise<void>;
@@ -16,9 +17,3 @@ export type ListsContextValue = {
 };
 
 export const ListsContext = createContext<ListsContextValue | null>(null);
-
-export const useLists = () => {
-    const ctx = useContext(ListsContext);
-    if (!ctx) throw new Error("useLists must be used within a ListsProvider");
-    return ctx;
-};

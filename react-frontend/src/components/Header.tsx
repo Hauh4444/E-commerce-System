@@ -1,19 +1,24 @@
 import { forwardRef, type HTMLAttributes, type ForwardedRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, Settings, User, LogOut, List, ShoppingCart } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useCart } from "@/contexts/CartContext";
-import { useToast } from "@/contexts/ToastContext";
+
+import { useAuth } from "@/features/auth/useAuth";
+import { useCart } from "@/features/cart/useCart";
+import { useToast } from "@/features/toast/useToast";
+
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "./ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 
 export type HeaderProps = HTMLAttributes<HTMLElement>
 
-const Header = forwardRef<HTMLElement, HeaderProps>((props, ref: ForwardedRef<HTMLElement>) => {
+const Header = forwardRef<
+    HTMLElement,
+    HeaderProps
+>((props, ref: ForwardedRef<HTMLElement>) => {
     const navigate = useNavigate();
     const { user, logout, error } = useAuth();
     const { totalItems } = useCart();
@@ -68,6 +73,7 @@ const Header = forwardRef<HTMLElement, HeaderProps>((props, ref: ForwardedRef<HT
                         variant="ghost"
                         className="w-11 h-11 p-4 rounded-full -translate-x-11"
                         onClick={handleSearch}
+                        title="Search"
                     >
                         <Search />
                     </Button>
@@ -109,10 +115,7 @@ const Header = forwardRef<HTMLElement, HeaderProps>((props, ref: ForwardedRef<HT
                                     <Button
                                         variant="ghost"
                                         className="ml-2 relative h-10 w-10 rounded-full"
-                                        type="button"
-                                        aria-label="User menu"
-                                        aria-haspopup="true"
-                                        aria-expanded="false"
+                                        title="Account"
                                     >
                                         <Avatar className="h-10 w-10">
                                             <AvatarFallback className="bg-gradient-primary text-xs text-background hover:opacity-80 transition-opacity">
@@ -166,7 +169,11 @@ const Header = forwardRef<HTMLElement, HeaderProps>((props, ref: ForwardedRef<HT
                             </DropdownMenu>
                         </>
                     ) : (
-                        <Button variant="ghost" onClick={() => navigate("/auth")} type="button">
+                        <Button
+                            variant="ghost"
+                            onClick={() => navigate("/auth")}
+                            title="Sign In"
+                        >
                             Sign In
                         </Button>
                     )}

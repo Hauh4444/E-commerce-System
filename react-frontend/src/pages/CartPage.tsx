@@ -1,5 +1,7 @@
 import { createCheckoutSessionForCart } from "@/api/payments";
-import { useCart } from '@/contexts/CartContext';
+
+import { useCart } from '@/features/cart/useCart';
+
 import { Header } from "@/components/Header";
 import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
@@ -42,7 +44,7 @@ const CartPage = () => {
                                     variant="destructive"
                                     className="w-auto px-6 py-2 text-xl hover:opacity-80 transition-opacity"
                                     onClick={clearCart}
-                                    type="button"
+                                    title="Clear Cart"
                                 >
                                     CLEAR CART
                                 </Button>
@@ -53,7 +55,7 @@ const CartPage = () => {
                                     variant="secondary"
                                     className="w-auto px-6 py-2 text-xl hover:opacity-80 transition-opacity"
                                     onClick={handleCheckout}
-                                    type="button"
+                                    title="Checkout"
                                 >
                                     PROCEED TO CHECKOUT
                                 </Button>

@@ -1,24 +1,24 @@
 import { forwardRef, type HTMLAttributes, type ForwardedRef } from "react";
-import { Star } from "@/components/ui/star";
-import { cn } from "@/lib/utils";
 
-export interface StarRatingProps extends HTMLAttributes<HTMLUListElement> {
+import { Star } from "./ui/star";
+
+export interface ProductStarsProps extends HTMLAttributes<HTMLUListElement> {
     value: number;
     max?: number;
     size?: number;
 }
 
-const StarRating = forwardRef<
+const ProductStars = forwardRef<
     HTMLUListElement,
-    StarRatingProps
->(({ value, max = 5, size = 24, className, ...props }, ref: ForwardedRef<HTMLUListElement>) => {
+    ProductStarsProps
+>(({ value, max = 5, size = 24, ...props }, ref: ForwardedRef<HTMLUListElement>) => {
         const fullStars = Math.floor(Math.round(value * 2) / 2);
         const hasHalfStar = Math.round(value * 2) / 2 - fullStars >= 0.5;
 
         return (
             <ul
                 ref={ref}
-                className={cn("w-fit relative flex items-center list-none p-0 m-0", className)}
+                className="w-fit relative flex items-center list-none p-0 m-0"
                 aria-label={`Rating: ${value} out of ${max} stars`}
                 role="img"
                 {...props}
@@ -48,6 +48,6 @@ const StarRating = forwardRef<
         );
     }
 );
-StarRating.displayName = "StarRating";
+ProductStars.displayName = "ProductStars";
 
-export { StarRating };
+export { ProductStars };

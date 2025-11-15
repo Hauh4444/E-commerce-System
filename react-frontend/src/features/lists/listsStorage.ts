@@ -1,4 +1,4 @@
-import { type List } from "@/api/lists.ts";
+import { type List } from "@/api/lists";
 
 const LISTS_STORAGE_KEY = "avento_lists";
 

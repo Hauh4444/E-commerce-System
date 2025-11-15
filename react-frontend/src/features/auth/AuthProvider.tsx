@@ -1,7 +1,9 @@
 import { type PropsWithChildren, useState, useEffect, useCallback, useMemo } from "react";
+
 import { registerRequest, loginRequest, type RegisterResponse, type LoginResponse } from "@/api/auth";
+
 import { AuthContext, type AuthContextValue } from "./AuthContext";
-import { loadAuth, saveAuth, type StoredAuth } from "@/utils/authStorage";
+import { loadAuth, saveAuth, type StoredAuth } from "./authStorage";
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
     const [token, setToken] = useState<string | null>(null);

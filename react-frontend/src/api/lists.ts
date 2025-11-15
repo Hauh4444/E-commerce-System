@@ -1,5 +1,6 @@
 import { apiConfig } from "@/config";
-import { loadAuth } from "@/utils/authStorage";
+
+import { loadAuth } from "@/features/auth/authStorage";
 
 export type List = {
     id: string;
@@ -18,7 +19,6 @@ export type CreateListPayload = {
 export type UpdateListPayload = {
     name: string;
 };
-
 
 const authHeaders = () => {
     const auth = loadAuth();

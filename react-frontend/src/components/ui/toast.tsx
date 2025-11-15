@@ -9,8 +9,10 @@ import {
 } from "@radix-ui/react-toast";
 import { type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { toastVariants } from "./variants/toast";
+
+import { cn } from "@/utils/cn";
+
+import { toastVariants } from "./variants";
 
 const ToastViewport = forwardRef<
     ComponentRef<typeof ToastViewportPrimitive>,

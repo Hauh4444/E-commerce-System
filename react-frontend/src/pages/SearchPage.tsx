@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+
 import { type Product, getProductsRequest } from "@/api/product";
+
 import { Header } from "@/components/Header";
 import { ProductCard } from "@/components/ProductCard";
 

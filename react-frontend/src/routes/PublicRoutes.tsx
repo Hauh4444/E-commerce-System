@@ -1,8 +1,10 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthProvider";
-import { ListsProvider } from "@/contexts/ListsProvider";
-import { CartProvider } from "@/contexts/CartProvider";
-import { ToastProvider } from "@/contexts/ToastProvider";
+
+import { AuthProvider } from "@/features/auth/AuthProvider";
+import { ListsProvider } from "@/features/lists/ListsProvider";
+import { CartProvider } from "@/features/cart/CartProvider";
+import { ToastProvider } from "@/features/toast/ToastProvider";
+
 import { HomePage, AuthPage, CartPage, ListsPage, SearchPage, ProductPage, NotFoundPage } from "@/pages";
 
 

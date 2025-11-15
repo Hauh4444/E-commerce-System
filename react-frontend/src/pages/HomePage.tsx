@@ -1,6 +1,8 @@
 import { useEffect } from "react";
-import { useAuth } from '@/contexts/AuthContext';
-import { useCart } from '@/contexts/CartContext';
+
+import { useAuth } from "@/features/auth/useAuth";
+import { useCart } from "@/features/cart/useCart";
+
 import { Header } from "@/components/Header";
 
 const HomePage = () => {
