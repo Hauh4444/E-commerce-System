@@ -97,6 +97,11 @@ export const ListsProvider = ({ children }: PropsWithChildren) => {
     }, []);
 
     const removeProductFromList = useCallback(async (listId: string, productId: string) => {
+        const confirmed = window.confirm(
+            "Are you sure you want to remove product from this list? This action cannot be undone."
+        );
+        if (!confirmed) return;
+
         setLoading(true);
         setError(null);
         try {
@@ -116,6 +121,11 @@ export const ListsProvider = ({ children }: PropsWithChildren) => {
     }, []);
 
     const deleteList = useCallback(async (id: string) => {
+        const confirmed = window.confirm(
+            "Are you sure you want to delete this list? This action cannot be undone and will permanently remove all of the list data."
+        );
+        if (!confirmed) return;
+
         setLoading(true);
         setError(null);
         try {

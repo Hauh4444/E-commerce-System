@@ -1,6 +1,6 @@
 import { type PropsWithChildren, useState, useEffect, useCallback, useMemo } from "react";
 
-import { registerRequest, loginRequest, type RegisterResponse, type LoginResponse } from "@/api/auth";
+import { registerRequest, loginRequest, deleteAccountRequest, type RegisterResponse, type LoginResponse } from "@/api/auth";
 
 import { AuthContext, type AuthContextValue } from "./AuthContext";
 import { loadAuth, saveAuth, type StoredAuth } from "./authStorage";
@@ -63,6 +63,26 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         saveAuth(null);
     }, []);
 
+    const deleteAccount = useCallback(async () => {
+        const confirmed = window.confirm(
+            "Are you sure you want to delete your account? This action cannot be undone and will permanently remove all account data."
+        );
+        if (!confirmed) return;
+
+        setLoading(true);
+        setError(null);
+        try {
+            await deleteAccountRequest();
+            logout();
+        } catch (authError) {
+            setError(authError instanceof Error ? authError.message : "Unable to login");
+            logout();
+            throw authError;
+        } finally {
+            setLoading(false);
+        }
+    }, [logout]);
+
     const clearError = useCallback(() => setError(null), []);
 
     const value: AuthContextValue = useMemo(() => ({
@@ -72,10 +92,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         register,
         login,
         logout,
+        deleteAccount,
         loading,
         error,
         clearError,
-    }), [user, token, register, login, logout, loading, error, clearError]);
+    }), [user, token, register, login, logout, deleteAccount, loading, error, clearError]);
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

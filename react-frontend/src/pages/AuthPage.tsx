@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "@/features/auth/useAuth";
 import { useLists } from "@/features/lists/useLists";
-import { useToast } from "@/features/toast/useToast";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +12,6 @@ import { Label } from "@/components/ui/label";
 
 const AuthPage = () => {
     const navigate = useNavigate();
-    const { toast } = useToast();
     const { register, login, loading, error } = useAuth();
     const { fetchLists } = useLists();
 
@@ -24,43 +22,21 @@ const AuthPage = () => {
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        await login(email, password);
-
-        if (error) {
-            toast({
-                title: "Error",
-                description: error,
-                variant: "destructive",
-            });
-        } else {
-            toast({
-                title: "Success",
-                description: "Welcome back!",
-            });
+        await login(email, password).then(async () => {
+            if (error) return;
             await fetchLists();
             navigate("/");
-        }
+        });
     };
 
     const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        await register(email, password, name);
-
-        if (error) {
-            toast({
-                title: "Error",
-                description: error,
-                variant: "destructive",
-            });
-        } else {
-            toast({
-                title: "Success",
-                description: "Account created! Go ahead and Login.",
-            });
+        await register(email, password, name).then(async () => {
+            if (error) return;
             await fetchLists();
             navigate("/");
-        }
+        });
     };
 
     return (

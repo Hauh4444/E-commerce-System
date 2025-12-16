@@ -46,7 +46,7 @@ export const getProductsRequest = async (
     params: ProductsRequestParams,
     options?: { signal?: AbortSignal }
 ): Promise<ProductsResponse> => {
-    const url = new URL(`${apiConfig.baseUrl}${apiConfig.endpoints.products}`);
+    const url = new URL(apiConfig.products.base);
 
     if ("ids" in params) {
         const ids = params.ids ?? [];
@@ -80,9 +80,9 @@ export const getProductsRequest = async (
 };
 
 export const getProductByIdRequest = async (
-    id: string
+    productId: string
 ): Promise<Product> => {
-    const response = await fetch(`${apiConfig.baseUrl}${apiConfig.endpoints.products}/${id}`, {
+    const response = await fetch(apiConfig.products.detail(productId), {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ export const getProductByIdRequest = async (
 export const createProductRequest = async (
     payload: CreateProductPayload
 ): Promise<Product> => {
-    const response = await fetch(`${apiConfig.baseUrl}${apiConfig.endpoints.products}`, {
+    const response = await fetch(apiConfig.products.base, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -127,10 +127,10 @@ export const createProductRequest = async (
 };
 
 export const updateProductRequest = async (
-    id: string,
+    productId: string,
     payload: Partial<CreateProductPayload>
 ): Promise<Product> => {
-    const response = await fetch(`${apiConfig.baseUrl}${apiConfig.endpoints.products}/${id}`, {
+    const response = await fetch(apiConfig.products.detail(productId), {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -152,9 +152,9 @@ export const updateProductRequest = async (
 };
 
 export const deleteProductRequest = async (
-    id: string
+    productId: string
 ): Promise<{ deleted: boolean; product_id: string }> => {
-    const response = await fetch(`${apiConfig.baseUrl}${apiConfig.endpoints.products}/${id}`, {
+    const response = await fetch(apiConfig.products.detail(productId), {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',

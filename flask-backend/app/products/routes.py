@@ -1,14 +1,15 @@
 from http import HTTPStatus
-from datetime import datetime
-
 from flask import Blueprint, jsonify, request
-from pymongo.errors import PyMongoError
 from pydantic import BaseModel, Field, constr, confloat, conint, ValidationError
+from typing import List as TList
 
-from ..extensions import get_db
-from ..utils import error_response, parse_object_id, serialize_document, serialize_id
+from app.extensions.mongo import serialize_id, serialize_document
+from app.products import ProductsRepository
+from app.utils import error_response
 
 products_bp = Blueprint("products", __name__)
+
+products_repo = ProductsRepository()
 
 
 class ProductCreateSchema(BaseModel):
@@ -18,7 +19,7 @@ class ProductCreateSchema(BaseModel):
     description: str = ""
     inventory: conint(ge=0) = 0
     category: str | None = None
-    images: list[str] = Field(default=[])
+    images: TList[str] = Field(default=[])
     attributes: dict = Field(default_factory=dict)
 
 
@@ -29,13 +30,12 @@ class ProductUpdateSchema(BaseModel):
     description: str | None
     inventory: conint(ge=0) | None
     category: str | None
-    images: list[str] | None = None
+    images: TList[str] | None = None
     attributes: dict | None = None
 
 
 @products_bp.get("/", strict_slashes=False)
 def list_products():
-    db = get_db()
     query_param = request.args.get("query", "").strip()
     ids_param = request.args.get("ids", "").strip()
     try:
@@ -43,23 +43,11 @@ def list_products():
     except ValueError:
         return error_response("invalid_limit", HTTPStatus.BAD_REQUEST)
 
+    ids_list = ids_param.split(",") if ids_param else None
     try:
-        mongo_query = {}
-
-        if ids_param:
-            ids_list = [parse_object_id(pid) for pid in ids_param.split(",")]
-            ids_list = [i for i in ids_list if i]
-            if not ids_list:
-                return error_response("no_valid_ids_provided", HTTPStatus.BAD_REQUEST)
-            mongo_query["_id"] = {"$in": ids_list}
-
-        elif query_param:
-            mongo_query["name"] = {"$regex": query_param, "$options": "i"}
-
-        products_cursor = db.products.find(mongo_query).sort("created_at", -1).limit(limit)
-        products = [serialize_document(p) for p in products_cursor]
-        return jsonify(products), HTTPStatus.OK
-    except PyMongoError as e:
+        products = products_repo.list_products(query=query_param, ids=ids_list, limit=limit)
+        return jsonify([serialize_document(p) for p in products]), HTTPStatus.OK
+    except Exception as e:
         return error_response(f"Database error: {str(e)}", HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
@@ -68,34 +56,21 @@ def create_product():
     payload = request.get_json()
     if payload is None:
         return error_response("invalid_json")
-
     try:
         data = ProductCreateSchema(**payload)
     except ValidationError as e:
         return error_response("invalid_payload", details=e.errors())
 
-    db = get_db()
-    product_data = data.model_dump()
-    product_data.update({
-        "created_at": datetime.now(),
-        "updated_at": datetime.now(),
-        "average_review": 0,
-        "reviews": 0,
-    })
-
-    result = db.products.insert_one(product_data)
-    product = db.products.find_one({"_id": result.inserted_id})
-    return jsonify(serialize_document(product)), HTTPStatus.CREATED
+    try:
+        product = products_repo.create_product(product_data=data.model_dump())
+        return jsonify(serialize_document(product)), HTTPStatus.CREATED
+    except Exception as e:
+        return error_response(f"Database error: {str(e)}", HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
 @products_bp.get("/<product_id>")
 def get_product(product_id: str):
-    db = get_db()
-    lookup_id = parse_object_id(product_id)
-    if not lookup_id:
-        return error_response("invalid_product_id")
-
-    product = db.products.find_one({"_id": lookup_id})
+    product = products_repo.get_product_by_id(product_id=product_id)
     if not product:
         return error_response("product_not_found", HTTPStatus.NOT_FOUND)
     return jsonify(serialize_document(product)), HTTPStatus.OK
@@ -103,15 +78,9 @@ def get_product(product_id: str):
 
 @products_bp.put("/<product_id>")
 def update_product(product_id: str):
-    db = get_db()
-    lookup_id = parse_object_id(product_id)
-    if not lookup_id:
-        return error_response("invalid_product_id")
-
     payload = request.get_json()
     if payload is None:
         return error_response("invalid_json")
-
     try:
         data = ProductUpdateSchema(**payload)
     except ValidationError as e:
@@ -121,21 +90,15 @@ def update_product(product_id: str):
     if not updates:
         return error_response("no_updates_provided")
 
-    updates["updated_at"] = datetime.now()
-    db.products.update_one({"_id": lookup_id}, {"$set": updates})
-    product = db.products.find_one({"_id": lookup_id})
+    product = products_repo.update_product(product_id=product_id, updates=updates)
+    if not product:
+        return error_response("product_not_found", HTTPStatus.NOT_FOUND)
     return jsonify(serialize_document(product)), HTTPStatus.OK
 
 
 @products_bp.delete("/<product_id>")
 def delete_product(product_id: str):
-    db = get_db()
-    lookup_id = parse_object_id(product_id)
-    if not lookup_id:
-        return error_response("invalid_product_id")
-
-    result = db.products.delete_one({"_id": lookup_id})
-    if result.deleted_count == 0:
+    deleted = products_repo.delete_product(product_id=product_id)
+    if not deleted:
         return error_response("product_not_found", HTTPStatus.NOT_FOUND)
-
-    return jsonify({"deleted": True, "product_id": serialize_id(lookup_id)}), HTTPStatus.OK
+    return jsonify({"deleted": True, "product_id": serialize_id(product_id)}), HTTPStatus.OK

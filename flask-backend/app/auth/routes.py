@@ -1,19 +1,20 @@
 import json
 from http import HTTPStatus
-from datetime import datetime
 
 from flask import Blueprint, jsonify, request
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import check_password_hash
 from pydantic import BaseModel, EmailStr, constr, ValidationError
 
-from ..extensions import get_db, get_redis
-from ..services.jwt_tokens import create_access_token
-from ..config import Config
-from ..utils import serialize_document
+from app.config import Config
+from app.extensions.mongo import serialize_document
+from app.extensions.redis import get_redis_client
+from app.auth import auth_required, create_access_token, AuthRepository
+from app.lists import ListsRepository
 
 auth_bp = Blueprint("auth", __name__)
 
-JWT_ACCESS_EXPIRES_MINUTES = Config.JWT_ACCESS_EXPIRES_MINUTES
+auth_repo = AuthRepository()
+lists_repo = ListsRepository()
 
 
 class RegisterSchema(BaseModel):
@@ -57,24 +58,14 @@ def register():
     except ValidationError as e:
         return {"error": "invalid_payload", "details": e.errors()}, HTTPStatus.BAD_REQUEST
 
-    db = get_db()
-    email = str(data.email).lower()
-
-    if db.users.find_one({"email": email}):
+    if auth_repo.find_user_by_email(email=data.email):
         return {"error": "email_in_use"}, HTTPStatus.CONFLICT
 
-    user_data = {
-        "name": data.name,
-        "email": email,
-        "password_hash": generate_password_hash(data.password),
-        "role": "customer",
-        "created_at": datetime.now(),
-    }
+    user_doc = auth_repo.create_user(name=data.name, email=data.email, password=data.password)
 
-    insert_result = db.users.insert_one(user_data)
-    user_doc = db.users.find_one({"_id": insert_result.inserted_id})
+    lists_repo.create_list(user_id=user_doc["user_id"], name=user_doc["name"], product_ids=[])
 
-    response_body = generate_user_response(user_doc)
+    response_body = generate_user_response(user=user_doc)
     return jsonify(response_body), HTTPStatus.CREATED
 
 
@@ -89,11 +80,8 @@ def login():
     except ValidationError as e:
         return {"error": "invalid_payload", "details": e.errors()}, HTTPStatus.BAD_REQUEST
 
-    db = get_db()
-    email = str(data.email).lower()
-    user = db.users.find_one({"email": email})
-
-    if not user or not check_password_hash(user["password_hash"], data.password):
+    user = auth_repo.find_user_by_email(email=data.email)
+    if not user or not check_password_hash(pwhash=user["password_hash"], password=data.password):
         return {"error": "invalid_credentials"}, HTTPStatus.UNAUTHORIZED
 
     access_token = create_access_token(
@@ -108,12 +96,31 @@ def login():
         "role": user.get("role", "customer"),
     })
 
-    redis_client = get_redis()
+    redis_client = get_redis_client()
     redis_key = f"user_session:{access_token}"
-    redis_client.set(redis_key, json.dumps(user_data), ex=(60 * JWT_ACCESS_EXPIRES_MINUTES))
+    redis_client.set(redis_key, json.dumps(user_data), ex=(60 * Config.JWT_ACCESS_EXPIRES_MINUTES))
 
     return jsonify({
         "access_token": access_token,
         "token_type": "Bearer",
         "user": user_data,
     }), HTTPStatus.OK
+
+
+@auth_bp.delete("/delete")
+@auth_required
+def delete_account(user):
+    db_user = auth_repo.find_user_by_id(user_id=user["id"])
+    if not db_user:
+        return {"error": "user_not_found"}, HTTPStatus.NOT_FOUND
+
+    auth_repo.delete_user(user_id=user["id"])
+
+    redis_client = get_redis_client()
+    keys = redis_client.keys(f"user_session:*")
+    for key in keys:
+        value = redis_client.get(key)
+        if value and json.loads(value).get("_id") == str(user["id"]):
+            redis_client.delete(key)
+
+    return {"message": "account_deleted"}, HTTPStatus.OK

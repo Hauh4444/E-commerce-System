@@ -5,8 +5,8 @@ import stripe
 from flask import Blueprint, request, jsonify
 from pydantic import BaseModel, ValidationError, constr, confloat, conint
 
-from ..config import Config
-from ..utils import error_response
+from app.config import Config
+from app.utils import error_response
 
 payments_bp = Blueprint("payments", __name__)
 

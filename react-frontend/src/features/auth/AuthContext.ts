@@ -9,6 +9,7 @@ export type AuthContextValue = {
     register: (email: string, password: string, name: string) => Promise<void>;
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
+    deleteAccount: () => Promise<void>;
     loading: boolean;
     error: string | null;
     clearError: () => void;

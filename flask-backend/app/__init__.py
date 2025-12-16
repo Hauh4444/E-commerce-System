@@ -3,9 +3,33 @@ from typing import Optional, Type, Tuple, Dict
 from flask import Flask
 from flask_cors import CORS
 
-from .config import Config
-from .extensions import init_mongo, init_redis
-from .routes import register_routes
+from app.auth import auth_bp
+from app.products import products_bp
+from app.payments import payments_bp
+from app.lists import lists_bp
+
+from app.config import Config
+from app.extensions.mongo import init_mongo
+from app.extensions.redis import init_redis
+
+
+def register_routes(app: Flask) -> None:
+    """
+    Register all Flask blueprints for the application.
+
+    Args:
+        app (Flask): The Flask application instance.
+    """
+    blueprints = [
+        (products_bp, "/products"),
+        (auth_bp, "/auth"),
+        (payments_bp, "/payments"),
+        (lists_bp, "/lists"),
+    ]
+
+    for bp, prefix in blueprints:
+        app.register_blueprint(bp, url_prefix=prefix)
+
 
 
 def create_app(config_object: Optional[Type[Config]] = None) -> Flask:
@@ -33,10 +57,10 @@ def create_app(config_object: Optional[Type[Config]] = None) -> Flask:
 
     @app.route("/health/redis", methods=["GET"])
     def redis_health_check() -> Tuple[Dict[str, str], int]:
-        from .extensions import get_redis
+        from .extensions.redis import get_redis_client
 
         try:
-            redis_client = get_redis()
+            redis_client = get_redis_client()
             pong = redis_client.ping()
             if pong:
                 return {"redis_status": "ok"}, 200
@@ -46,12 +70,14 @@ def create_app(config_object: Optional[Type[Config]] = None) -> Flask:
 
     @app.route("/health/mongo", methods=["GET"])
     def mongo_health_check() -> Tuple[Dict[str, str], int]:
-        from .extensions import get_db
+        from .extensions.mongo import get_mongo_db
 
         try:
-            db = get_db()
-            db.command("ping")
-            return {"mongo_status": "ok"}, 200
+            mongo_db = get_mongo_db()
+            pong = mongo_db.command("ping")
+            if pong:
+                return {"mongo_status": "ok"}, 200
+            return {"mongo_status": "unreachable"}, 500
         except Exception as e:
             return {"mongo_status": "error", "details": str(e)}, 500
 

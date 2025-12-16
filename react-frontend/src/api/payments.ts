@@ -21,7 +21,7 @@ export type CheckoutSessionResponse = {
 export const createCheckoutSessionRequest = async (
     payload: CreateCheckoutSessionPayload
 ): Promise<CheckoutSessionResponse> => {
-    const response = await fetch(`${apiConfig.baseUrl}${apiConfig.endpoints.payments}/create-checkout-session`, {
+    const response = await fetch(apiConfig.payments.createCheckoutSession, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

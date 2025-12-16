@@ -15,19 +15,19 @@ const ListProducts = forwardRef<
     ListProductsProps
 >(({ list }, ref: ForwardedRef<HTMLUListElement>) => {
     const [products, setProducts] = useState<Product[]>([]);
-    const [loadingProducts, setLoadingProducts] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const fetchProductsByIds = useCallback(async (ids: string[], signal: AbortSignal) => {
         if (!ids.length) {
             setProducts([]);
             return;
         }
-        setLoadingProducts(true);
+        setLoading(true);
         try {
             const data = await getProductsRequest({ ids }, { signal });
             if (!signal.aborted) setProducts(data);
         } finally {
-            if (!signal.aborted) setLoadingProducts(false);
+            if (!signal.aborted) setLoading(false);
         }
     }, []);
 
@@ -43,7 +43,7 @@ const ListProducts = forwardRef<
         return () => controller.abort();
     }, [list, fetchProductsByIds]);
 
-    if (loadingProducts) return <p>Loading products...</p>;
+    if (loading) return <p>Loading products...</p>;
     if (!products.length) return <p>No products in this list.</p>;
 
     return (list &&

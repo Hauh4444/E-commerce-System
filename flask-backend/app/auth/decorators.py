@@ -5,9 +5,9 @@ from http import HTTPStatus
 from flask import request, jsonify
 from jwt import InvalidTokenError, ExpiredSignatureError, DecodeError
 
-from ..services.jwt_tokens import decode_token
-from ..extensions import get_redis
-from ..utils import parse_object_id
+from app.auth.jwt import decode_token
+from app.extensions.mongo import parse_object_id
+from app.extensions.redis import get_redis_client
 
 
 def auth_required(f):
@@ -24,7 +24,7 @@ def auth_required(f):
         except (InvalidTokenError, ExpiredSignatureError, DecodeError):
             return jsonify({"error": "invalid_token"}), HTTPStatus.UNAUTHORIZED
 
-        redis_client = get_redis()
+        redis_client = get_redis_client()
         user_json = redis_client.get(f"user_session:{token}")
         if not user_json:
             return jsonify({"error": "session_expired"}), HTTPStatus.UNAUTHORIZED

@@ -66,6 +66,7 @@ const ProductCard = forwardRef<
     }
 
     const handleChangeQuantity = (id: string, quantity: number) => {
+        // TODO: more appropriate handling of changing quantity, when user clears input and quantity becomes null item should not be removed
         if (quantity > 50) return;
         if (quantity === 0) {
             removeItem(id);
@@ -165,9 +166,9 @@ const ProductCard = forwardRef<
                             {lists.length === 0 ? (
                                 <DropdownMenuItem disabled>No lists</DropdownMenuItem>
                             ) : (
-                                lists.map((list) => (
-                                    <DropdownMenuItem key={list.id} className="justify-center" onClick={() => addProductToList(list.id, product.id)}>
-                                        {list.name}
+                                lists.map((item) => (
+                                    <DropdownMenuItem key={item.id} className="justify-center" onClick={() => addProductToList(item.id, product.id)}>
+                                        {item.name}
                                     </DropdownMenuItem>
                                 ))
                             )}
@@ -189,24 +190,59 @@ const ProductCard = forwardRef<
             )}
 
             {variant === "list" && (
-                <CardContent className="min-w-[14rem] basis-[14rem] px-10 py-6 flex flex-col items-center justify-end gap-2">
-                    <Button
-                        variant="destructive"
-                        className="w-full px-6 py-2 rounded-full text-base hover:opacity-80 transition-opacity"
-                        onClick={() => removeProductFromList(list.id, product.id)}
-                        title="Remove from list"
-                    >
-                        REMOVE
-                    </Button>
-                    <Button
-                        variant="secondary"
-                        className="w-full px-6 py-2 rounded-full text-base hover:opacity-80 transition-opacity"
-                        onClick={(e) => handleAddToCart(e, product)}
-                        title="Add to cart"
-                    >
-                        ADD TO CART
-                    </Button>
-                </CardContent>
+                <>
+                    <CardContent className="min-w-[11.5rem] basis-[11.5rem] pl-10 pr-0 py-6 flex flex-col items-center justify-end gap-2">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    className="w-full px-6 py-2 border rounded-full text-base hover:opacity-80 transition-opacity"
+                                    title="Add to list"
+                                >
+                                    ADD TO LIST
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                className="w-fit bg-background border shadow-lg z-50"
+                                align="end"
+                                role="menu"
+                            >
+                                {lists.length === 0 ? (
+                                    <DropdownMenuItem disabled>No lists</DropdownMenuItem>
+                                ) : (
+                                    lists.map((item) => (item.id !== list.id &&
+                                        <DropdownMenuItem key={item.id} className="justify-center" onClick={() => addProductToList(item.id, product.id)}>
+                                            {item.name}
+                                        </DropdownMenuItem>
+                                    ))
+                                )}
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem className="justify-center" onClick={() => navigate("/lists")}>
+                                    <Plus size={12} />&ensp;Create new list
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <Button
+                            variant="secondary"
+                            className="w-full px-6 py-2 rounded-full text-base hover:opacity-80 transition-opacity"
+                            onClick={(e) => handleAddToCart(e, product)}
+                            title="Add to cart"
+                        >
+                            ADD TO CART
+                        </Button>
+                    </CardContent>
+
+                    <CardContent className="min-w-18 basis-18 px-5 py-6 flex flex-col items-center justify-center">
+                        <Button
+                            variant="ghost"
+                            className="w-10 px-2 py-2 rounded-full text-base hover:opacity-80 transition-opacity"
+                            onClick={() => removeProductFromList(list.id, product.id)}
+                            title="Remove from list"
+                        >
+                            <Trash />
+                        </Button>
+                    </CardContent>
+                </>
             )}
         </Card>
     );

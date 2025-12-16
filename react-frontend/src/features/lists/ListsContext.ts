@@ -11,7 +11,7 @@ export type ListsContextValue = {
     createList: (name: string) => Promise<List>;
     updateList: (id: string, name: string) => Promise<List>;
     addProductToList: (listId: string, productId: string) => Promise<List>;
-    removeProductFromList: (listId: string, productId: string) => Promise<List>;
+    removeProductFromList: (listId: string, productId: string) => Promise<List | void>;
     deleteList: (id: string) => Promise<void>;
     clearError: () => void;
 };

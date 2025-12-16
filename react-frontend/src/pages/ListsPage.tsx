@@ -21,7 +21,7 @@ export const ListsPage = () => {
                 <Tabs
                     value={selectedList?.id || (isCreating ? "new" : "")}
                     onValueChange={handlers.handleSelectList}
-                    className="w-3/4 pt-28"
+                    className="w-3/4 mb-10 pt-28"
                 >
                     <ListTabs
                         lists={lists}

@@ -36,7 +36,7 @@ export type LoginPayload = {
 export const registerRequest = async (
     payload: RegisterPayload
 ): Promise<RegisterResponse> => {
-    const response = await fetch(`${apiConfig.baseUrl}${apiConfig.endpoints.register}`, {
+    const response = await fetch(apiConfig.auth.register, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export const registerRequest = async (
 export const loginRequest = async (
     payload: LoginPayload
 ): Promise<LoginResponse> => {
-    const response = await fetch(`${apiConfig.baseUrl}${apiConfig.endpoints.login}`, {
+    const response = await fetch(apiConfig.auth.login, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -81,3 +81,21 @@ export const loginRequest = async (
     return await response.json() as Promise<LoginResponse>;
 };
 
+export const deleteAccountRequest = async (): Promise<void> => {
+    const response = await fetch(apiConfig.auth.deleteAccount, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        }
+    })
+
+    if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({}));
+        const message =
+            typeof errorBody.error === 'string'
+                ? errorBody.error
+                : 'Unexpected error deleting account.';
+        throw new Error(message);
+    }
+}
