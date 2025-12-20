@@ -1,9 +1,8 @@
 from http import HTTPStatus
 from flask import jsonify
-from typing import Any
 
 
-def error_response(error: str, status: HTTPStatus = HTTPStatus.BAD_REQUEST, details: Any = None):
+def error_response(error: str, status: HTTPStatus = HTTPStatus.BAD_REQUEST, details: any = None):
     """
     Return a standardized JSON error response.
 

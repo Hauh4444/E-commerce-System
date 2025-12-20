@@ -45,7 +45,7 @@ const SearchPage = () => {
             <main className="w-full min-h-screen bg-gradient-subtle flex flex-col items-center justify-start absolute top-0">
                 <ul className="w-3/4 mt-20 mb-8 space-y-6">
                     <li className="mt-6 pl-4 text-xl text-left">
-                        {products ? products.length : 0} result{products && products.length != 1 && 's'} for '{query}':
+                        {products ? products.length : 0} result{products && products.length != 1 && "s"} for "{query}":
                     </li>
                     {loading ? (
                         <h2 className="text-2xl font-bold">Loading products...</h2>

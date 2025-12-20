@@ -1,35 +1,47 @@
-    import { apiConfig } from "@/config.ts";
+import { apiConfig } from "@/config.ts";
+import { authHeaders } from "@/api/auth";
 
 export interface Settings {
-    pushNotifications: boolean;
-    weeklyDigest: boolean;
-    collaborationAlerts: boolean;
-    publicProfile: boolean;
+    loginAlerts: boolean;
+    trustedDevices: boolean;
     analyticsTracking: boolean;
-    darkModePreference: boolean | null;
+    personalizedRecommendations: boolean;
+    darkMode: boolean | null;
+    compactProductLayout: boolean;
 }
 
-export const getSettings = async (userId: string): Promise<Settings | null> => {
-    const res = await fetch(apiConfig.settings.detail(userId), {
+export const getSettings = async (): Promise<Settings | null> => {
+    const response = await fetch(apiConfig.settings.base, {
         method: "GET",
-        credentials: "include",
+        headers: authHeaders(),
     });
 
-    if (!res.ok) return null;
-    return await res.json() as Settings;
+    if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        const msg =
+            typeof body.error === "string" ? body.error : "Unable to fetch settings.";
+        throw new Error(msg);
+    }
+
+    return await response.json();
 };
 
-export const updateSettingRequest = async (
-    userId: string,
-    key: string,
-    value: boolean | null
+export const updateSettingsRequest = async (
+    payload: Settings,
 ): Promise<void> => {
-    const res = await fetch(apiConfig.settings.detail(userId), {
-        method: "PATCH",
+    const response = await fetch(apiConfig.settings.base, {
+        method: "PUT",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ [key]: value }),
+        headers: authHeaders(),
+        body: JSON.stringify(payload),
     });
 
-    if (!res.ok) throw new Error("Failed to update user setting");
+    if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        const msg =
+            typeof body.error === "string" ? body.error : "Unable to update user settings.";
+        throw new Error(msg);
+    }
+
+    return await response.json();
 };

@@ -7,7 +7,7 @@ export type SettingsContextValue = {
     loading: boolean;
     error: string | null;
     loadSettings: () => Promise<void>;
-    updateSetting: (key: string, value: boolean | null) => Promise<void>;
+    updateSetting: (key: keyof Settings, value: boolean | null) => Promise<void>;
     clearError: () => void;
 };
 

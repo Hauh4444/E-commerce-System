@@ -1,6 +1,6 @@
 import { forwardRef, type ComponentPropsWithoutRef, type ReactElement, type ComponentRef } from "react";
 import {
-    Root as ToastRoot,
+    Root as ToastPrimitive,
     Action as ToastActionPrimitive,
     Close as ToastClosePrimitive,
     Title as ToastTitlePrimitive,
@@ -30,16 +30,16 @@ const ToastViewport = forwardRef<
 ToastViewport.displayName = ToastViewportPrimitive.displayName;
 
 const Toast = forwardRef<
-    ComponentRef<typeof ToastRoot>,
-    ComponentPropsWithoutRef<typeof ToastRoot> & VariantProps<typeof toastVariants>
+    ComponentRef<typeof ToastPrimitive>,
+    ComponentPropsWithoutRef<typeof ToastPrimitive> & VariantProps<typeof toastVariants>
 >(({ className, variant, ...props }, ref) => (
-    <ToastRoot
+    <ToastPrimitive
         ref={ref}
         className={cn(toastVariants({ variant }), className)}
         {...props}
     />
 ));
-Toast.displayName = ToastRoot.displayName;
+Toast.displayName = ToastPrimitive.displayName;
 
 const ToastAction = forwardRef<
     ComponentRef<typeof ToastActionPrimitive>,

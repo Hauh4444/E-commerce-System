@@ -1,4 +1,3 @@
-from typing import List
 from http import HTTPStatus
 
 import stripe
@@ -21,7 +20,7 @@ class CheckoutItem(BaseModel):
     currency: constr(min_length=1)
 
 class CheckoutSessionSchema(BaseModel):
-    items: List[CheckoutItem]
+    items: list[CheckoutItem]
 
 
 @payments_bp.route("/create-checkout-session", methods=["POST"])

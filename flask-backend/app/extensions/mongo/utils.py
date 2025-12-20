@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Any, Dict, Optional, Union
+from typing import Optional, Union
 
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -41,7 +41,7 @@ def serialize_id(value: Union[ObjectId, str, None]) -> Optional[str]:
     return value
 
 
-def serialize_document(document: Dict[str, Any]) -> Dict[str, Any]:
+def serialize_document(document: dict[str, any]) -> dict[str, any]:
     """
     Serialize a MongoDB document for JSON responses.
 
@@ -49,10 +49,10 @@ def serialize_document(document: Dict[str, Any]) -> Dict[str, Any]:
     and renames '_id' to 'id'.
 
     Args:
-        document (Dict[str, Any]): The MongoDB document to serialize.
+        document (dict[str, any]): The MongoDB document to serialize.
 
     Returns:
-        Dict[str, Any]: Serialized document.
+        dict[str, any]: Serialized document.
     """
     serialized = _serialize_recursive(document)
     if "_id" in serialized:
@@ -60,15 +60,15 @@ def serialize_document(document: Dict[str, Any]) -> Dict[str, Any]:
     return serialized
 
 
-def _serialize_recursive(value: Any) -> Any:
+def _serialize_recursive(value: any) -> any:
     """
     Recursively serialize values in a document.
 
     Args:
-        value (Any): The value to serialize.
+        value (any): The value to serialize.
 
     Returns:
-        Any: Serialized value.
+        any: Serialized value.
     """
     if isinstance(value, ObjectId):
         return str(value)

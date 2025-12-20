@@ -1,6 +1,6 @@
-import { apiConfig } from '@/config';
+import { apiConfig, baseHeaders } from "@/config";
 
-import { type CartItem } from '@/features/cart/CartContext';
+import { type CartItem } from "@/features/cart/CartContext";
 
 export type CheckoutItem = {
     product_name: string;
@@ -22,20 +22,17 @@ export const createCheckoutSessionRequest = async (
     payload: CreateCheckoutSessionPayload
 ): Promise<CheckoutSessionResponse> => {
     const response = await fetch(apiConfig.payments.createCheckoutSession, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        method: "POST",
+        headers: baseHeaders(),
         body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
         const errorBody = await response.json().catch(() => ({}));
         const message =
-            typeof errorBody.error === 'string'
+            typeof errorBody.error === "string"
                 ? errorBody.error
-                : 'Unable to create checkout session.';
+                : "Unable to create checkout session.";
         throw new Error(message);
     }
 

@@ -1,4 +1,5 @@
-import { apiConfig } from '@/config';
+import { apiConfig, baseHeaders } from "@/config";
+import { authHeaders } from "@/api/auth";
 
 export type Product = {
     id: string;
@@ -60,10 +61,7 @@ export const getProductsRequest = async (
 
     const response = await fetch(url.toString(), {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-        },
+        headers: baseHeaders(),
         signal: options?.signal,
     });
 
@@ -83,19 +81,16 @@ export const getProductByIdRequest = async (
     productId: string
 ): Promise<Product> => {
     const response = await fetch(apiConfig.products.detail(productId), {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        method: "GET",
+        headers: baseHeaders(),
     });
 
     if (!response.ok) {
         const errorBody = await response.json().catch(() => ({}));
         const message =
-            typeof errorBody.error === 'string'
+            typeof errorBody.error === "string"
                 ? errorBody.error
-                : 'Unable to fetch product.';
+                : "Unable to fetch product.";
         throw new Error(message);
     }
 
@@ -106,20 +101,17 @@ export const createProductRequest = async (
     payload: CreateProductPayload
 ): Promise<Product> => {
     const response = await fetch(apiConfig.products.base, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        method: "POST",
+        headers: authHeaders(),
         body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
         const errorBody = await response.json().catch(() => ({}));
         const message =
-            typeof errorBody.error === 'string'
+            typeof errorBody.error === "string"
                 ? errorBody.error
-                : 'Unable to create product.';
+                : "Unable to create product.";
         throw new Error(message);
     }
 
@@ -131,20 +123,17 @@ export const updateProductRequest = async (
     payload: Partial<CreateProductPayload>
 ): Promise<Product> => {
     const response = await fetch(apiConfig.products.detail(productId), {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        method: "PUT",
+        headers: authHeaders(),
         body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
         const errorBody = await response.json().catch(() => ({}));
         const message =
-            typeof errorBody.error === 'string'
+            typeof errorBody.error === "string"
                 ? errorBody.error
-                : 'Unable to update product.';
+                : "Unable to update product.";
         throw new Error(message);
     }
 
@@ -155,19 +144,16 @@ export const deleteProductRequest = async (
     productId: string
 ): Promise<{ deleted: boolean; product_id: string }> => {
     const response = await fetch(apiConfig.products.detail(productId), {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        method: "DELETE",
+        headers: authHeaders(),
     });
 
     if (!response.ok) {
         const errorBody = await response.json().catch(() => ({}));
         const message =
-            typeof errorBody.error === 'string'
+            typeof errorBody.error === "string"
                 ? errorBody.error
-                : 'Unable to delete product.';
+                : "Unable to delete product.";
         throw new Error(message);
     }
 

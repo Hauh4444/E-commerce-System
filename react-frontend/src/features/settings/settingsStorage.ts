@@ -1,6 +1,6 @@
 const SETTINGS_STORAGE_KEY = "avento_user_settings";
 
-import { type Settings } from "./SettingsContext";
+import { type Settings } from "@/api/settings";
 
 export const loadSettingsFromStorage = (): Settings | null => {
     try {

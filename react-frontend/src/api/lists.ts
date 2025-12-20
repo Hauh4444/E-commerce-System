@@ -1,6 +1,5 @@
 import { apiConfig } from "@/config";
-
-import { loadAuth } from "@/features/auth/authStorage";
+import { authHeaders } from "@/api/auth";
 
 export type List = {
     id: string;
@@ -18,15 +17,6 @@ export type CreateListPayload = {
 
 export type UpdateListPayload = {
     name: string;
-};
-
-const authHeaders = () => {
-    const auth = loadAuth();
-    return {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: auth?.token ? `Bearer ${auth.token}` : "",
-    };
 };
 
 export const getListsRequest = async (): Promise<ListsResponse> => {

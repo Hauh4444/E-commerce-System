@@ -1,10 +1,10 @@
-export { default as HomePage } from './HomePage';
-export { default as AuthPage } from './AuthPage';
-export { default as CartPage } from './CartPage';
-export { default as ListsPage } from './ListsPage';
-export { default as SearchPage } from './SearchPage';
-export { default as ProductPage } from './ProductPage';
-export { default as ProfilePage } from './ProfilePage';
-export { default as SettingsPage } from './SettingsPage';
-export { default as NotFoundPage } from './NotFoundPage';
+export { default as HomePage } from "./HomePage";
+export { default as AuthPage } from "./AuthPage";
+export { default as CartPage } from "./CartPage";
+export { default as ListsPage } from "./ListsPage";
+export { default as SearchPage } from "./SearchPage";
+export { default as ProductPage } from "./ProductPage";
+export { default as AccountPage } from "./AccountPage.tsx";
+export { default as SettingsPage } from "./SettingsPage";
+export { default as NotFoundPage } from "./NotFoundPage";
 

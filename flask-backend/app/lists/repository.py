@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List as TList
 
 from app.extensions.mongo import get_mongo_db, parse_object_id
 
@@ -16,17 +15,17 @@ class ListsRepository:
     def lists(self):
         return self.db.lists
 
-    def get_lists_for_user(self, user_id):
+    def get_lists_for_user(self, user_id: str):
         return list(self.lists.find({"user_id": user_id}).sort("created_at", -1))
 
-    def create_list(self, user_id: str, name: str, product_ids: TList[str] = None):
+    def create_list(self, user_id: str, name: str, product_ids: list[str] = None):
         product_ids = product_ids or []
         list_data = {
             "user_id": user_id,
             "name": name,
             "product_ids": [parse_object_id(pid) for pid in product_ids],
             "created_at": datetime.now(),
-            "updated_at": datetime.now(),
+            "updated_at": datetime.now()
         }
         inserted_id = self.lists.insert_one(list_data).inserted_id
         return self.lists.find_one({"_id": inserted_id})

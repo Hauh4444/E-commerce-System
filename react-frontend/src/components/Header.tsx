@@ -26,20 +26,21 @@ const Header = forwardRef<
     const [query, setQuery] = useState("");
 
     const handleSearch = () => {
-        if (query) {
-            navigate(`/search?query=${encodeURIComponent(query.trim())}`);
-        }
+        if (!query) return;
+
+        navigate(`/search?query=${encodeURIComponent(query.trim())}`);
     }
 
     const handleSignOut = async () => {
         logout();
 
         if (error) {
-            toast({ title: "Error", description: error, variant: "destructive" });
+            toast({title: "Error", description: error, variant: "destructive"});
         } else {
             toast({ title: "Signed out", description: "You have been signed out successfully" });
-            navigate("/");
         }
+
+        navigate("/");
     };
 
     return (
@@ -48,17 +49,17 @@ const Header = forwardRef<
             className={cn("sticky top-0 z-50 w-full border-b-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85", props.className)}
             {...props}
         >
-            <nav className="flex h-[80px] items-center justify-between px-8" aria-label="Main navigation">
+            <nav className="h-[80px] flex items-center justify-between px-8" aria-label="Main navigation">
                 <Link
                     to="/"
-                    className="flex items-center gap-4 hover:opacity-80 transition-opacity"
+                    className="w-1/4 flex hover:opacity-80 transition-opacity"
                 >
                     <h1 className="text-3xl font-extrabold bg-gradient-primary bg-clip-text text-transparent">
                         Avento
                     </h1>
                 </Link>
 
-                <span className="max-w-[50%] flex grow">
+                <span className="flex grow relative">
                     <Input
                         id="search-query"
                         className="h-11 p-4 border-border rounded-full !text-base opacity-80 focus-visible:opacity-100"
@@ -71,7 +72,7 @@ const Header = forwardRef<
                     />
                     <Button
                         variant="ghost"
-                        className="w-11 h-11 p-4 rounded-full -translate-x-11"
+                        className="w-11 h-11 p-4 rounded-full absolute right-0"
                         onClick={handleSearch}
                         title="Search"
                     >
@@ -79,7 +80,7 @@ const Header = forwardRef<
                     </Button>
                 </span>
 
-                <article className="flex items-center gap-4">
+                <ul className="w-1/4 flex justify-end gap-4">
                     {user ? (
                         <>
                             <Button
@@ -105,7 +106,7 @@ const Header = forwardRef<
                                         variant="destructive"
                                         className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
                                     >
-                                        {totalItems > 99 ? '99+' : totalItems}
+                                        {totalItems > 99 ? "99+" : totalItems}
                                     </Badge>
                                 )}
                             </Button>
@@ -146,9 +147,9 @@ const Header = forwardRef<
 
                                     <ul className="p-0 m-0 list-none">
                                         <li>
-                                            <DropdownMenuItem onClick={() => navigate("/profile")} role="menuitem">
+                                            <DropdownMenuItem onClick={() => navigate("/account")} role="menuitem">
                                                 <User className="mr-2 h-4 w-4" aria-hidden="true" />
-                                                Profile
+                                                Account
                                             </DropdownMenuItem>
                                         </li>
                                         <li>
@@ -177,7 +178,7 @@ const Header = forwardRef<
                             Sign In
                         </Button>
                     )}
-                </article>
+                </ul>
             </nav>
         </header>
     );

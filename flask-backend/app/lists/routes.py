@@ -1,11 +1,11 @@
 from http import HTTPStatus
 from flask import Blueprint, jsonify, request
 from pydantic import BaseModel, constr, ValidationError, Field
-from typing import List as TList
 
 from app.extensions.mongo import serialize_id, serialize_document
 from app.auth import auth_required
 from app.lists import ListsRepository
+from app.utils import error_response
 
 lists_bp = Blueprint("lists", __name__)
 
@@ -14,12 +14,12 @@ lists_repo = ListsRepository()
 
 class ListCreateSchema(BaseModel):
     name: constr(min_length=1)
-    product_ids: TList[str] = Field(default=[])
+    product_ids: list[str] = Field(default=[])
 
 
 class ListUpdateSchema(BaseModel):
     name: constr(min_length=1) | None
-    product_ids: TList[str] | None = None
+    product_ids: list[str] | None = None
 
 
 @lists_bp.get("/", strict_slashes=False)
@@ -44,6 +44,9 @@ def create_list(user):
     except ValidationError as e:
         return error_response("invalid_payload", details=e.errors())
 
+    if data.name == "Wishlist":
+        return error_response("cannot_create_wishlist", HTTPStatus.FORBIDDEN)
+
     try:
         new_list = lists_repo.create_list(user_id=user["id"], name=data.name, product_ids=data.product_ids)
         return jsonify(serialize_document(new_list)), HTTPStatus.CREATED
@@ -63,6 +66,12 @@ def get_list(user, list_id: str):
 @lists_bp.put("/<list_id>")
 @auth_required
 def update_list(user, list_id: str):
+    lst = lists_repo.get_list_by_id(user_id=user["id"], list_id=list_id)
+    if not lst:
+        return error_response("list_not_found", HTTPStatus.NOT_FOUND)
+    if lst["name"] == "Wishlist":
+        return error_response("cannot_modify_wishlist", HTTPStatus.FORBIDDEN)
+
     payload = request.get_json()
     if payload is None:
         return error_response("invalid_json")
@@ -70,6 +79,9 @@ def update_list(user, list_id: str):
         data = ListUpdateSchema(**payload)
     except ValidationError as e:
         return error_response("invalid_payload", details=e.errors())
+
+    if data.name == "Wishlist":
+        return error_response("cannot_update_list", HTTPStatus.FORBIDDEN)
 
     updates = {k: v for k, v in data.model_dump(exclude_unset=True).items()}
     if not updates:
@@ -104,6 +116,12 @@ def remove_product_from_list(user, list_id: str, product_id: str):
 @lists_bp.delete("/<list_id>")
 @auth_required
 def delete_list(user, list_id: str):
+    lst = lists_repo.get_list_by_id(user_id=user["id"], list_id=list_id)
+    if not lst:
+        return error_response("list_not_found", HTTPStatus.NOT_FOUND)
+    if lst["name"] == "Wishlist":
+        return error_response("cannot_delete_wishlist", HTTPStatus.FORBIDDEN)
+
     deleted = lists_repo.delete_list(user_id=user["id"], list_id=list_id)
     if not deleted:
         return error_response("list_not_found", HTTPStatus.NOT_FOUND)

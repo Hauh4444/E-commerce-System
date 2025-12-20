@@ -1,4 +1,4 @@
-import { type MouseEvent, useEffect, useState } from 'react';
+import { type MouseEvent, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { type Product, getProductByIdRequest } from "@/api/product";
@@ -132,7 +132,7 @@ const ProductPage = () => {
                                                 {Object.entries(product.attributes).map(([key, value], index) => (
                                                     <tr key={index} className="text-lg text-left">
                                                         <th className="px-4 py-1 align-top">
-                                                            {key.split('_').map(word => word[0].toUpperCase() + word.slice(1)).join(' ')}
+                                                            {key.split("_").map(word => word[0].toUpperCase() + word.slice(1)).join(" ")}
                                                         </th>
                                                         <td className="px-4 py-1 align-top">
                                                             {value}

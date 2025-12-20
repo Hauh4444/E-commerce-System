@@ -1,6 +1,6 @@
 import { createCheckoutSessionForCart } from "@/api/payments";
 
-import { useCart } from '@/features/cart/useCart';
+import { useCart } from "@/features/cart/useCart";
 
 import { Header } from "@/components/Header";
 import { ProductCard } from "@/components/ProductCard";
@@ -32,7 +32,7 @@ const CartPage = () => {
                     {items && totalItems > 0 ? (
                         <>
                             <li className="mt-6 pl-4 text-xl text-left">
-                                Your cart ({totalItems} item{totalItems != 1 && 's'}):
+                                Your cart ({totalItems} item{totalItems != 1 && "s"}):
                             </li>
                             {items.map((item) => (
                                 <li key={item.id}>

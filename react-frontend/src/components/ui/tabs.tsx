@@ -1,14 +1,12 @@
 import { forwardRef, type ComponentPropsWithoutRef, type ForwardedRef, type ComponentRef } from "react";
 import {
-    Root as TabsRoot,
+    Root as Tabs,
     List as TabsListPrimitive,
     Trigger as TabsTriggerPrimitive,
     Content as TabsContentPrimitive
 } from "@radix-ui/react-tabs";
 
 import { cn } from "@/utils/cn";
-
-const Tabs = TabsRoot;
 
 const TabsList = forwardRef<
     ComponentRef<typeof TabsListPrimitive>,

@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List as TList
 
 from app.extensions.mongo import get_mongo_db, parse_object_id
 
@@ -16,7 +15,7 @@ class ProductsRepository:
     def products(self):
         return self.db.products
 
-    def list_products(self, query: str = "", ids: TList[str] = None, limit: int = 50):
+    def list_products(self, query: str = "", ids: list[str] = None, limit: int = 50):
         mongo_query = {}
         if ids:
             ids_list = [parse_object_id(pid) for pid in ids]

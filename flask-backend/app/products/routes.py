@@ -1,7 +1,6 @@
 from http import HTTPStatus
 from flask import Blueprint, jsonify, request
 from pydantic import BaseModel, Field, constr, confloat, conint, ValidationError
-from typing import List as TList
 
 from app.extensions.mongo import serialize_id, serialize_document
 from app.products import ProductsRepository
@@ -19,7 +18,7 @@ class ProductCreateSchema(BaseModel):
     description: str = ""
     inventory: conint(ge=0) = 0
     category: str | None = None
-    images: TList[str] = Field(default=[])
+    images: list[str] = Field(default=[])
     attributes: dict = Field(default_factory=dict)
 
 
@@ -30,7 +29,7 @@ class ProductUpdateSchema(BaseModel):
     description: str | None
     inventory: conint(ge=0) | None
     category: str | None
-    images: TList[str] | None = None
+    images: list[str] | None = None
     attributes: dict | None = None
 
 

@@ -1,18 +1,18 @@
 import { type PropsWithChildren, useState, useCallback, useEffect, useMemo } from "react";
 
-import { getSettings, updateSettingRequest, type Settings } from "@/api/settings";
+import { getSettings, updateSettingsRequest, type Settings } from "@/api/settings";
 
 import { SettingsContext, type SettingsContextValue } from "./SettingsContext";
 import { loadSettingsFromStorage, saveSettingsToStorage } from "./settingsStorage";
 import { useAuth } from "@/features/auth/useAuth";
 
 const defaultSettings: Settings = {
-    publicProfile: true,
-    pushNotifications: false,
-    weeklyDigest: true,
-    collaborationAlerts: true,
-    analyticsTracking: true,
-    darkModePreference: null,
+    loginAlerts: true,
+    trustedDevices: true,
+    analyticsTracking: false,
+    personalizedRecommendations: false,
+    darkMode: null,
+    compactProductLayout: false
 };
 
 export const SettingsProvider = ({ children }: PropsWithChildren) => {
@@ -22,10 +22,32 @@ export const SettingsProvider = ({ children }: PropsWithChildren) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const applyTheme = useCallback((darkMode: boolean | null) => {
+        let isDark: boolean;
+        if (darkMode === null) {
+            isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        } else {
+            isDark = darkMode;
+        }
+
+        if (isDark) {
+            document.documentElement.classList.add("dark");
+            document.documentElement.classList.remove("light");
+        } else {
+            document.documentElement.classList.add("light");
+            document.documentElement.classList.remove("dark");
+        }
+    }, []);
+
     useEffect(() => {
         const stored = loadSettingsFromStorage();
-        if (stored) setSettings(stored);
-    }, []);
+        if (stored) {
+            setSettings(stored);
+            applyTheme(stored.darkMode);
+        } else {
+            applyTheme(defaultSettings.darkMode);
+        }
+    }, [applyTheme]);
 
     const loadSettings = useCallback(async () => {
         if (!isAuthenticated || !user) return;
@@ -33,7 +55,7 @@ export const SettingsProvider = ({ children }: PropsWithChildren) => {
         setError(null);
 
         try {
-            const remote = await getSettings(user.id);
+            const remote = await getSettings();
             if (remote) {
                 setSettings(remote);
                 saveSettingsToStorage(remote);
@@ -53,19 +75,23 @@ export const SettingsProvider = ({ children }: PropsWithChildren) => {
         }
     }, [isAuthenticated, user, loadSettings]);
 
-    const updateSetting = useCallback(async (key: string, value: boolean | null) => {
+    const updateSetting = useCallback(async (key: keyof Settings, value: boolean | null) => {
         if (!isAuthenticated || !user) return;
 
         const newSettings = { ...settings, [key]: value };
         setSettings(newSettings);
         saveSettingsToStorage(newSettings);
 
-        try {
-            await updateSettingRequest(user.id, key, value);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Unable to update setting");
+        if (key === "darkMode") {
+            applyTheme(value);
         }
-    }, [settings, isAuthenticated, user]);
+
+        try {
+            await updateSettingsRequest(newSettings);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Unable to update user settings");
+        }
+    },[settings, isAuthenticated, user, applyTheme]);
 
     const clearError = useCallback(() => setError(null), []);
 

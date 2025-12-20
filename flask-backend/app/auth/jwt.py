@@ -1,18 +1,18 @@
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Optional
+from typing import Optional
 
 import jwt
 from flask import current_app
 from jwt import InvalidTokenError, ExpiredSignatureError
 
 
-def create_access_token(subject: str, claims: Optional[Dict[str, Any]] = None) -> str:
+def create_access_token(subject: str, claims: Optional[dict[str, any]] = None) -> str:
     """
     Generate a signed JWT access token for a given subject.
 
     Args:
         subject (str): The unique identifier for the token subject (e.g., user ID or email).
-        claims (Optional[Dict[str, Any]]): Additional claims to include in the token payload.
+        claims (Optional[dict[str, any]]): Additional claims to include in the token payload.
 
     Returns:
         str: The encoded JWT access token.
@@ -20,7 +20,7 @@ def create_access_token(subject: str, claims: Optional[Dict[str, Any]] = None) -
     now = datetime.now(timezone.utc)
     expires_delta = timedelta(minutes=current_app.config["JWT_ACCESS_EXPIRES_MINUTES"])
 
-    payload: Dict[str, Any] = {
+    payload: dict[str, any] = {
         "sub": subject,
         "iat": int(now.timestamp()),
         "exp": int((now + expires_delta).timestamp()),
@@ -38,7 +38,7 @@ def create_access_token(subject: str, claims: Optional[Dict[str, Any]] = None) -
     return token
 
 
-def decode_token(token: str) -> Dict[str, Any]:
+def decode_token(token: str) -> dict[str, any]:
     """
     Verify and decode a JWT access token.
 
@@ -46,7 +46,7 @@ def decode_token(token: str) -> Dict[str, Any]:
         token (str): The JWT token to decode.
 
     Returns:
-        Dict[str, Any]: The decoded token payload.
+        dict[str, any]: The decoded token payload.
 
     Raises:
         jwt.ExpiredSignatureError: If the token has expired.

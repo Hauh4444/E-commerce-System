@@ -6,7 +6,7 @@ import { ListsProvider } from "@/features/lists/ListsProvider";
 import { CartProvider } from "@/features/cart/CartProvider";
 import { ToastProvider } from "@/features/toast/ToastProvider";
 
-import { HomePage, AuthPage, CartPage, ListsPage, SearchPage, ProductPage, ProfilePage, SettingsPage, NotFoundPage } from "@/pages";
+import { HomePage, AuthPage, CartPage, ListsPage, SearchPage, ProductPage, AccountPage, SettingsPage, NotFoundPage } from "@/pages";
 
 
 export const PublicRoutes = () => {
@@ -20,12 +20,12 @@ export const PublicRoutes = () => {
                             <BrowserRouter>
                                 <Routes>
                                     <Route path="/" element={<HomePage />} />
+                                    <Route path="/account" element={<AccountPage />} />
                                     <Route path="/auth" element={<AuthPage />} />
                                     <Route path="/cart" element={<CartPage />} />
                                     <Route path="/lists/:listId?" element={<ListsPage />} />
                                     <Route path="/search" element={<SearchPage />} />
                                     <Route path="/product/:productId" element={<ProductPage />} />
-                                    <Route path="/profile" element={<ProfilePage />} />
                                     <Route path="/settings" element={<SettingsPage />} />
                                     <Route path="*" element={<NotFoundPage />} />
                                 </Routes>

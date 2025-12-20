@@ -9,11 +9,14 @@ from app.config import Config
 from app.extensions.mongo import serialize_document
 from app.extensions.redis import get_redis_client
 from app.auth import auth_required, create_access_token, AuthRepository
+from app.settings import SettingsRepository
 from app.lists import ListsRepository
+from app.utils import error_response
 
 auth_bp = Blueprint("auth", __name__)
 
 auth_repo = AuthRepository()
+settings_repo = SettingsRepository()
 lists_repo = ListsRepository()
 
 
@@ -51,19 +54,20 @@ def generate_user_response(user):
 def register():
     payload = request.get_json()
     if payload is None:
-        return {"error": "invalid_json"}, HTTPStatus.BAD_REQUEST
+        return error_response("invalid_json")
 
     try:
         data = RegisterSchema(**payload)
     except ValidationError as e:
-        return {"error": "invalid_payload", "details": e.errors()}, HTTPStatus.BAD_REQUEST
+        return error_response("invalid_payload", details=e.errors())
 
     if auth_repo.find_user_by_email(email=data.email):
-        return {"error": "email_in_use"}, HTTPStatus.CONFLICT
+        return error_response("email_in_use", status=HTTPStatus.CONFLICT)
 
     user_doc = auth_repo.create_user(name=data.name, email=data.email, password=data.password)
 
-    lists_repo.create_list(user_id=user_doc["user_id"], name=user_doc["name"], product_ids=[])
+    settings_repo.create_settings(user_id=user_doc["user_id"])
+    lists_repo.create_list(user_id=user_doc["user_id"], name="Wishlist", product_ids=[])
 
     response_body = generate_user_response(user=user_doc)
     return jsonify(response_body), HTTPStatus.CREATED
@@ -73,16 +77,16 @@ def register():
 def login():
     payload = request.get_json()
     if payload is None:
-        return {"error": "invalid_json"}, HTTPStatus.BAD_REQUEST
+        return error_response("invalid_json")
 
     try:
         data = LoginSchema(**payload)
     except ValidationError as e:
-        return {"error": "invalid_payload", "details": e.errors()}, HTTPStatus.BAD_REQUEST
+        return error_response("invalid_payload", details=e.errors())
 
     user = auth_repo.find_user_by_email(email=data.email)
     if not user or not check_password_hash(pwhash=user["password_hash"], password=data.password):
-        return {"error": "invalid_credentials"}, HTTPStatus.UNAUTHORIZED
+        return error_response("invalid_credentials", status=HTTPStatus.UNAUTHORIZED)
 
     access_token = create_access_token(
         subject=str(user["_id"]),
@@ -112,7 +116,7 @@ def login():
 def delete_account(user):
     db_user = auth_repo.find_user_by_id(user_id=user["id"])
     if not db_user:
-        return {"error": "user_not_found"}, HTTPStatus.NOT_FOUND
+        return error_response("user_not_found", status=HTTPStatus.NOT_FOUND)
 
     auth_repo.delete_user(user_id=user["id"])
 
@@ -123,4 +127,4 @@ def delete_account(user):
         if value and json.loads(value).get("_id") == str(user["id"]):
             redis_client.delete(key)
 
-    return {"message": "account_deleted"}, HTTPStatus.OK
+    return jsonify({"message": "account_deleted"}), HTTPStatus.OK

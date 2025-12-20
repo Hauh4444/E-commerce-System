@@ -1,5 +1,12 @@
 const BASE = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:5000";
 
+export const baseHeaders = () => {
+    return {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+    };
+};
+
 export const apiConfig = {
     baseUrl: BASE,
 

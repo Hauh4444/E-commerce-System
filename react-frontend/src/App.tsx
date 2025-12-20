@@ -1,6 +1,6 @@
-import { PublicRoutes } from './routes/PublicRoutes';
+import { PublicRoutes } from "./routes/PublicRoutes";
 
-import './App.css';
+import "./App.css";
 
 const App = () => {
     return (

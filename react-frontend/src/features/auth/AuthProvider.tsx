@@ -7,7 +7,7 @@ import { loadAuth, saveAuth, type StoredAuth } from "./authStorage";
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
     const [token, setToken] = useState<string | null>(null);
-    const [user, setUser] = useState<StoredAuth['user'] | null>(null);
+    const [user, setUser] = useState<StoredAuth["user"] | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
