@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "@/features/auth/useAuth";
+import { useToast } from "@/features/toast/useToast";
 
 import { Header } from "@/components/Header";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card.tsx";
@@ -9,7 +10,8 @@ import { Button } from "@/components/ui/button.tsx";
 
 const AccountPage = () => {
     const navigate = useNavigate();
-    const { user, logout, deleteAccount } = useAuth();
+    const { toast } = useToast();
+    const { user, error, logout, deleteAccount } = useAuth();
 
     const links = [
         {
@@ -64,6 +66,18 @@ const AccountPage = () => {
         }
     ];
 
+    const handleSignOut = async () => {
+        logout();
+
+        if (error) {
+            toast({title: "Error", description: error, variant: "destructive"});
+        } else {
+            toast({ title: "Signed out", description: "You have been signed out successfully" });
+        }
+
+        navigate("/");
+    };
+
     return (
         <>
             <Header />
@@ -100,7 +114,7 @@ const AccountPage = () => {
                             <Separator />
 
                             <article className="flex items-center justify-center gap-5">
-                                <Button variant="outline" className="w-full" onClick={logout}>
+                                <Button variant="outline" className="w-full" onClick={handleSignOut}>
                                     Sign Out
                                 </Button>
                                 <Button variant="destructive" className="w-full" onClick={deleteAccount}>

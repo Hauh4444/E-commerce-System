@@ -1,10 +1,15 @@
 import { PublicRoutes } from "./routes/PublicRoutes";
 
+import { Toaster } from "@/components/ui/toaster";
+
 import "./App.css";
 
 const App = () => {
     return (
-        <PublicRoutes />
+        <>
+            <PublicRoutes />
+            <Toaster />
+        </>
     );
 };
 

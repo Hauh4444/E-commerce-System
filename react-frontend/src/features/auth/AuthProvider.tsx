@@ -58,6 +58,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }, []);
 
     const logout = useCallback(() => {
+        const confirmed = window.confirm(
+            "Are you sure you want to sign out of this account?"
+        );
+        if (!confirmed) return;
+
         setToken(null);
         setUser(null);
         saveAuth(null);

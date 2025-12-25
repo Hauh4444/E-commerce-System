@@ -14,10 +14,14 @@ import {
 import { ListsContext, type ListsContextValue } from "./ListsContext";
 import { loadLists, saveLists } from "./listsStorage";
 
+import { useToast } from "@/features/toast/useToast";
+
 export const ListsProvider = ({ children }: PropsWithChildren) => {
     const [lists, setLists] = useState<List[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const { toast } = useToast();
 
     useEffect(() => {
         const stored = loadLists();
@@ -33,11 +37,12 @@ export const ListsProvider = ({ children }: PropsWithChildren) => {
             saveLists(data);
         } catch (listsError) {
             setError(listsError instanceof Error ? listsError.message : "Unable to fetch lists");
+            toast({ title: "Error fetching lists", description: error, variant: "destructive" });
             throw listsError;
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [toast, error]);
 
     const createList = useCallback(async (name: string) => {
         setLoading(true);
@@ -49,14 +54,16 @@ export const ListsProvider = ({ children }: PropsWithChildren) => {
                 saveLists(updated);
                 return updated;
             });
+            toast({ title: "List created", description: `${name} created successfully.` });
             return created;
         } catch (listsError) {
             setError(listsError instanceof Error ? listsError.message : "Unable to create list");
+            toast({ title: "Error creating list", description: error, variant: "destructive" });
             throw listsError;
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [toast, error]);
 
     const updateList = useCallback(async (id: string, name: string) => {
         setLoading(true);
@@ -68,14 +75,16 @@ export const ListsProvider = ({ children }: PropsWithChildren) => {
                 saveLists(updatedLists);
                 return updatedLists;
             });
+            toast({ title: "List updated", description: `List name successfully updated to ${name}.` });
             return updated;
         } catch (listsError) {
             setError(listsError instanceof Error ? listsError.message : "Unable to update list");
+            toast({ title: "Error updating list", description: error, variant: "destructive" });
             throw listsError;
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [toast, error]);
 
     const addProductToList = useCallback(async (listId: string, productId: string) => {
         setLoading(true);
@@ -87,14 +96,16 @@ export const ListsProvider = ({ children }: PropsWithChildren) => {
                 saveLists(updatedLists);
                 return updatedLists;
             });
+            toast({ title: "Product added", description: `Product successfully added to ${updated.name}.` });
             return updated;
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Unable to add product to list");
-            throw err;
+        } catch (listsError) {
+            setError(listsError instanceof Error ? listsError.message : "Unable to add product to list");
+            toast({ title: "Error adding product", description: error, variant: "destructive" });
+            throw listsError;
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [toast, error]);
 
     const removeProductFromList = useCallback(async (listId: string, productId: string) => {
         const confirmed = window.confirm(
@@ -111,14 +122,16 @@ export const ListsProvider = ({ children }: PropsWithChildren) => {
                 saveLists(updatedLists);
                 return updatedLists;
             });
+            toast({ title: "Product removed", description: `Product removed from ${updated.name}.` });
             return updated;
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Unable to remove product from list");
-            throw err;
+        } catch (listsError) {
+            setError(listsError instanceof Error ? listsError.message : "Unable to remove product from list");
+            toast({ title: "Error removing product", description: error, variant: "destructive" });
+            throw listsError;
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [toast, error]);
 
     const deleteList = useCallback(async (id: string) => {
         const confirmed = window.confirm(
@@ -129,19 +142,22 @@ export const ListsProvider = ({ children }: PropsWithChildren) => {
         setLoading(true);
         setError(null);
         try {
+            const name = lists.find(l => l.id === id)?.name;
             await deleteListRequest(id);
             setLists(prev => {
                 const updatedLists = prev.filter(l => l.id !== id);
                 saveLists(updatedLists);
                 return updatedLists;
             });
+            toast({ title: "List deleted", description: `${name} deleted successfully.` });
         } catch (listsError) {
             setError(listsError instanceof Error ? listsError.message : "Unable to delete list");
+            toast({ title: "Error deleting list", description: error, variant: "destructive" });
             throw listsError;
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [lists, toast, error]);
 
     const clearError = useCallback(() => setError(null), []);
 

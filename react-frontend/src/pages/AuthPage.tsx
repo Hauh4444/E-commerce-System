@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "@/features/auth/useAuth";
 import { useLists } from "@/features/lists/useLists";
+import { useToast } from "@/features/toast/useToast";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ const AuthPage = () => {
     const navigate = useNavigate();
     const { register, login, loading, error } = useAuth();
     const { fetchLists } = useLists();
+    const { toast } = useToast();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -23,7 +25,11 @@ const AuthPage = () => {
         e.preventDefault();
 
         await login(email, password).then(async () => {
-            if (error) return;
+            if (error) {
+                toast({ title: "Login failed", description: error, variant: "destructive" });
+                return;
+            }
+            toast({ title: "Logged in", description: `Welcome back!` });
             await fetchLists();
             navigate("/");
         });
@@ -33,7 +39,11 @@ const AuthPage = () => {
         e.preventDefault();
 
         await register(email, password, name).then(async () => {
-            if (error) return;
+            if (error) {
+                toast({ title: "Registration failed", description: error, variant: "destructive" });
+                return;
+            }
+            toast({ title: "Account created", description: `Welcome, ${name}!` });
             await fetchLists();
             navigate("/");
         });

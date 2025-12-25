@@ -6,6 +6,7 @@ import {
     Title as ToastTitlePrimitive,
     Description as ToastDescriptionPrimitive,
     Viewport as ToastViewportPrimitive,
+    Provider as ToastProvider
 } from "@radix-ui/react-toast";
 import { type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
@@ -21,7 +22,7 @@ const ToastViewport = forwardRef<
     <ToastViewportPrimitive
         ref={ref}
         className={cn(
-            "fixed bottom-4 right-4 z-[999999] flex max-h-screen w-full flex-col-reverse sm:bottom-4 sm:right-4 sm:top-auto sm:flex-col md:max-w-[420px]",
+            "fixed bottom-4 right-4 flex max-h-screen flex-col-reverse",
             className
         )}
         {...props}
@@ -104,10 +105,11 @@ type ToastActionElement = ReactElement<typeof ToastAction>;
 export {
     type ToastProps,
     type ToastActionElement,
-    ToastViewport,
     Toast,
-    ToastTitle,
-    ToastDescription,
     ToastClose,
+    ToastDescription,
+    ToastTitle,
+    ToastViewport,
     ToastAction,
+    ToastProvider
 };

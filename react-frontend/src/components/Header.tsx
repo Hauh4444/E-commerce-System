@@ -119,7 +119,7 @@ const Header = forwardRef<
                                         title="Account"
                                     >
                                         <Avatar className="h-10 w-10">
-                                            <AvatarFallback className="bg-gradient-primary text-xs text-background hover:opacity-80 transition-opacity">
+                                            <AvatarFallback className="bg-gradient-primary text-xs text-white hover:opacity-80 transition-opacity">
                                                 {user.name.split(" ").map((n) => n[0]).join("") || "U"}
                                             </AvatarFallback>
                                         </Avatar>
@@ -133,7 +133,7 @@ const Header = forwardRef<
                                 >
                                     <figure className="flex items-center gap-2 p-2">
                                         <Avatar className="h-10 w-10">
-                                            <AvatarFallback className="bg-gradient-primary text-xs text-background">
+                                            <AvatarFallback className="bg-gradient-primary text-xs text-white">
                                                 {user.name.split(" ").map((n) => n[0]).join("") || "U"}
                                             </AvatarFallback>
                                         </Avatar>
