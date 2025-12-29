@@ -1,7 +1,7 @@
 import { useState, useEffect, type KeyboardEvent, type MouseEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { type List } from "@/api/lists.ts";
+import { type List } from "@/api/lists";
 
 import { useLists } from "./useLists";
 
@@ -45,8 +45,8 @@ export const useSelectedList = (lists: List[]) => {
                 navigate(`/lists/${newList.id}`);
             }
             resetUI();
-        } catch (err) {
-            console.error("Error saving list:", err);
+        } catch (listsError) {
+            console.error("Error saving list:", listsError);
         }
     };
 
@@ -67,8 +67,8 @@ export const useSelectedList = (lists: List[]) => {
         try {
             await deleteList(id);
             resetUI();
-        } catch (err) {
-            console.error("Error deleting list:", err);
+        } catch (listsError) {
+            console.error("Error deleting list:", listsError);
         }
     };
 

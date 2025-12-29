@@ -6,7 +6,7 @@ from flask import current_app
 from jwt import InvalidTokenError, ExpiredSignatureError
 
 
-def create_access_token(subject: str, claims: Optional[dict[str, any]] = None) -> str:
+def create_access_token(subject: str, claims: Optional[dict[str, any]] = None):
     """
     Generate a signed JWT access token for a given subject.
 
@@ -38,7 +38,7 @@ def create_access_token(subject: str, claims: Optional[dict[str, any]] = None) -
     return token
 
 
-def decode_token(token: str) -> dict[str, any]:
+def decode_token(token: str):
     """
     Verify and decode a JWT access token.
 

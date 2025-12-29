@@ -1,5 +1,3 @@
-import { createCheckoutSessionForCart } from "@/api/payments";
-
 import { useCart } from "@/features/cart/useCart";
 
 import { Header } from "@/components/Header";
@@ -7,22 +5,14 @@ import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 
 const CartPage = () => {
-    const { items, totalItems, totalPrice, clearCart } = useCart();
+    const { items, totalItems, totalPrice, clearCart, handleCheckout } = useCart();
 
-    const handleCheckout = async () => {
-        if (!items || items.length === 0) return;
-
-        try {
-            const session = await createCheckoutSessionForCart(items);
-            if (session.url) {
-                window.location.href = session.url;
-            } else {
-                console.error("Checkout session failed", session);
-            }
-        } catch (err) {
-            console.error("Error during checkout:", err);
-        }
-    };
+    const handleClearCart = () => {
+        // We have the window confirm here instead of in useCart since we call clear cart after checkout in HomePage component
+        const confirmed = window.confirm("Are you sure you want to clear your cart?");
+        if (!confirmed) return;
+        clearCart();
+    }
 
     return (
         <>
@@ -42,7 +32,7 @@ const CartPage = () => {
                             <Button
                                 variant="destructive"
                                 className="w-auto px-6 py-2 text-xl hover:opacity-80 transition-opacity"
-                                onClick={clearCart}
+                                onClick={handleClearCart}
                                 title="Clear Cart"
                             >
                                 CLEAR CART

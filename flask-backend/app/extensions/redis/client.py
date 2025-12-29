@@ -4,7 +4,7 @@ import redis
 from flask import Flask, current_app
 
 
-def init_redis(app: Flask) -> None:
+def init_redis(app: Flask):
     """
     Initialize Redis client for a Flask application and store in app context.
 
@@ -19,7 +19,7 @@ def init_redis(app: Flask) -> None:
     )
 
 
-def get_redis_client(app: Optional[Flask] = None) -> redis.Redis:
+def get_redis_client(app: Optional[Flask] = None):
     """
     Get the Redis client for the current app context.
 

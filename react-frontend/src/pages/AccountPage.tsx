@@ -1,80 +1,71 @@
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "@/features/auth/useAuth";
-import { useToast } from "@/features/toast/useToast";
 
 import { Header } from "@/components/Header";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card.tsx";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button.tsx";
+import { Button } from "@/components/ui/button";
 
 const AccountPage = () => {
     const navigate = useNavigate();
-    const { toast } = useToast();
-    const { user, error, logout, deleteAccount } = useAuth();
+    const { user, logout, deleteAccount } = useAuth();
 
     const links = [
         {
             title: "Your Orders",
-            content: "Track, return, cancel orders, download invoices, or buy again",
+            description: "Track, return, cancel orders, download invoices, or buy again",
             nav: "/orders"
         },
         {
             title: "Returns & Refunds",
-            content: "View return status and refund history",
+            description: "View return status and refund history",
             nav: "/returns"
         },
         {
             title: "Your Lists",
-            content: "View and manage your saved items",
+            description: "View and manage your saved items",
             nav: "/lists"
         },
         {
             title: "Addresses",
-            content: "Manage shipping and billing addresses",
+            description: "Manage shipping and billing addresses",
             nav: "/addresses"
         },
         {
             title: "Payment Methods",
-            content: "Add, remove, or set default payment options",
+            description: "Add, remove, or set default payment options",
             nav: "/payments"
         },
         {
             title: "Login & Security",
-            content: "Edit login details, password, and security settings",
+            description: "Edit login details, password, and security settings",
             nav: "/security"
         },
         {
             title: "Profile Information",
-            content: "Update your name, email, and phone number",
+            description: "Update your name, email, and phone number",
             nav: "/profile"
         },
         {
             title: "Notifications & Preferences",
-            content: "Manage email, SMS, and marketing preferences",
+            description: "Manage email, SMS, and marketing preferences",
             nav: "/preferences"
         },
         {
             title: "Rewards & Credits",
-            content: "View loyalty points, store credit, and gift card balance",
+            description: "View loyalty points, store credit, and gift card balance",
             nav: "/rewards"
         },
         {
             title: "Help & Support",
-            content: "Contact support or browse help articles",
+            description: "Contact support or browse help articles",
             nav: "/support"
         }
     ];
 
     const handleSignOut = async () => {
         logout();
-
-        if (error) {
-            toast({title: "Error", description: error, variant: "destructive"});
-        } else {
-            toast({ title: "Signed out", description: "You have been signed out successfully" });
-        }
-
         navigate("/");
     };
 
@@ -84,8 +75,8 @@ const AccountPage = () => {
             <main className="w-full min-h-screen bg-gradient-subtle flex flex-col items-center justify-start absolute top-0">
                 <ul className="w-[50%] mb-10 pt-28 flex flex-col items-center gap-6">
                     <div className="w-full grid grid-cols-2 gap-3">
-                        {links.map((link) => (
-                            <Card className="h-28">
+                        {links.map((link, index) => (
+                            <Card className="h-28" key={index}>
                                 <Button
                                     variant="ghost"
                                     className="w-full h-full px-8 flex flex-col justify-center"
@@ -95,7 +86,7 @@ const AccountPage = () => {
                                         <CardTitle className="text-xl">{link.title}</CardTitle>
                                     </CardHeader>
                                     <CardContent className="py-0 text-wrap">
-                                        {link.content}
+                                        {link.description}
                                     </CardContent>
                                 </Button>
                             </Card>

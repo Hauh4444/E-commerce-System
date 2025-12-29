@@ -6,6 +6,8 @@ import { SettingsContext, type SettingsContextValue } from "./SettingsContext";
 import { loadSettingsFromStorage, saveSettingsToStorage } from "./settingsStorage";
 import { useAuth } from "@/features/auth/useAuth";
 
+import { useToast } from "@/features/toast/useToast";
+
 const defaultSettings: Settings = {
     loginAlerts: true,
     trustedDevices: true,
@@ -16,20 +18,16 @@ const defaultSettings: Settings = {
 };
 
 export const SettingsProvider = ({ children }: PropsWithChildren) => {
-    const { user, isAuthenticated } = useAuth();
+    const { user } = useAuth();
 
     const [settings, setSettings] = useState<Settings>(defaultSettings);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const applyTheme = useCallback((darkMode: boolean | null) => {
-        let isDark: boolean;
-        if (darkMode === null) {
-            isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        } else {
-            isDark = darkMode;
-        }
+    const { toast } = useToast();
 
+    const applyTheme = useCallback((darkMode: boolean | null) => {
+        const isDark: boolean = darkMode !== null ? darkMode : window.matchMedia("(prefers-color-scheme: dark)").matches;
         if (isDark) {
             document.documentElement.classList.add("dark");
             document.documentElement.classList.remove("light");
@@ -41,16 +39,18 @@ export const SettingsProvider = ({ children }: PropsWithChildren) => {
 
     useEffect(() => {
         const stored = loadSettingsFromStorage();
-        if (stored) {
-            setSettings(stored);
-            applyTheme(stored.darkMode);
-        } else {
+        if (!stored) {
+            setSettings(defaultSettings);
             applyTheme(defaultSettings.darkMode);
+            return;
         }
+
+        setSettings(stored);
+        applyTheme(stored.darkMode);
     }, [applyTheme]);
 
-    const loadSettings = useCallback(async () => {
-        if (!isAuthenticated || !user) return;
+    const fetchSettings = useCallback(async () => {
+        if (!user) return;
         setLoading(true);
         setError(null);
 
@@ -60,38 +60,41 @@ export const SettingsProvider = ({ children }: PropsWithChildren) => {
                 setSettings(remote);
                 saveSettingsToStorage(remote);
             }
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Unable to load settings");
+        } catch (settingsError) {
+            const message = settingsError instanceof Error ? settingsError.message : "Unable to load settings";
+            setError(message);
+            toast({ title: "Settings error", description: message, variant: "destructive" });
+
+            throw settingsError;
         } finally {
             setLoading(false);
         }
-    }, [isAuthenticated, user]);
+    }, [user, toast]);
 
     useEffect(() => {
-        if (isAuthenticated && user) {
-            loadSettings().catch((settingsError) => {
-                console.error(settingsError);
-            });
-        }
-    }, [isAuthenticated, user, loadSettings]);
+        void fetchSettings();
+    }, [fetchSettings]);
 
     const updateSetting = useCallback(async (key: keyof Settings, value: boolean | null) => {
-        if (!isAuthenticated || !user) return;
+        if (!user) return;
 
         const newSettings = { ...settings, [key]: value };
         setSettings(newSettings);
         saveSettingsToStorage(newSettings);
 
-        if (key === "darkMode") {
-            applyTheme(value);
-        }
+        if (key === "darkMode") applyTheme(value);
 
         try {
             await updateSettingsRequest(newSettings);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Unable to update user settings");
+            toast({ title: "Settings updated", description: "Your preferences have been saved." });
+        } catch (settingsError) {
+            const message = settingsError instanceof Error ? settingsError.message : "Unable to update user settings";
+            setError(message);
+            toast({ title: "Settings error", description: message, variant: "destructive" });
+
+            throw settingsError;
         }
-    },[settings, isAuthenticated, user, applyTheme]);
+    },[settings, user, applyTheme, toast]);
 
     const clearError = useCallback(() => setError(null), []);
 
@@ -99,10 +102,9 @@ export const SettingsProvider = ({ children }: PropsWithChildren) => {
         settings,
         loading,
         error,
-        loadSettings,
         updateSetting,
         clearError,
-    }), [settings, loading, error, loadSettings, updateSetting, clearError]);
+    }), [settings, loading, error, updateSetting, clearError]);
 
     return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
 };

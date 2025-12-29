@@ -2,7 +2,7 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash
 from pydantic import EmailStr
 
-from app.extensions.mongo import get_mongo_db
+from app.extensions.mongo import get_mongo_db, parse_object_id
 
 
 class AuthRepository:
@@ -21,7 +21,7 @@ class AuthRepository:
         return self.users.find_one({"email": email})
 
     def find_user_by_id(self, user_id: str):
-        return self.users.find_one({"_id": user_id})
+        return self.users.find_one({"_id": parse_object_id(user_id)})
 
     def create_user(self, name: str, email: EmailStr, password: str, role: str = "customer"):
         user_data = {
@@ -35,4 +35,4 @@ class AuthRepository:
         return self.find_user_by_id(inserted_id)
 
     def delete_user(self, user_id: str):
-        return self.users.delete_one({"_id": user_id})
+        return self.users.delete_one({"_id": parse_object_id(user_id)})

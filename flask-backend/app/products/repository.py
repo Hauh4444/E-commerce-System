@@ -28,8 +28,9 @@ class ProductsRepository:
 
         return list(self.products.find(mongo_query).sort("created_at", -1).limit(limit))
 
-    def create_product(self, product_data: dict):
+    def create_product(self, user_id: str, product_data: dict):
         product_data.update({
+            "user_id": parse_object_id(user_id),
             "created_at": datetime.now(),
             "updated_at": datetime.now(),
             "average_review": 0,
@@ -39,22 +40,13 @@ class ProductsRepository:
         return self.products.find_one({"_id": inserted_id})
 
     def get_product_by_id(self, product_id: str):
-        lookup_id = parse_object_id(product_id)
-        if not lookup_id:
-            return None
-        return self.products.find_one({"_id": lookup_id})
+        return self.products.find_one({"_id": parse_object_id(product_id)})
 
-    def update_product(self, product_id: str, updates: dict):
-        lookup_id = parse_object_id(product_id)
-        if not lookup_id:
-            return None
+    def update_product(self, user_id: str, product_id: str, updates: dict):
         updates["updated_at"] = datetime.now()
-        self.products.update_one({"_id": lookup_id}, {"$set": updates})
-        return self.products.find_one({"_id": lookup_id})
+        self.products.update_one({"_id": parse_object_id(product_id), "user_id": parse_object_id(user_id)}, {"$set": updates})
+        return self.products.find_one({"_id": parse_object_id(product_id), "user_id": parse_object_id(user_id)})
 
-    def delete_product(self, product_id: str):
-        lookup_id = parse_object_id(product_id)
-        if not lookup_id:
-            return False
-        result = self.products.delete_one({"_id": lookup_id})
+    def delete_product(self, user_id: str, product_id: str):
+        result = self.products.delete_one({"_id": parse_object_id(product_id), "user_id": parse_object_id(user_id)})
         return result.deleted_count > 0

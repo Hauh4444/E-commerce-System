@@ -6,7 +6,7 @@ import { useCart } from "@/features/cart/useCart";
 import { Header } from "@/components/Header";
 
 const HomePage = () => {
-    const { isAuthenticated, user } = useAuth();
+    const { user } = useAuth();
     const { clearCart } = useCart();
 
     useEffect(() => {
@@ -21,7 +21,7 @@ const HomePage = () => {
             <Header />
             <main className="w-full min-h-screen bg-gradient-subtle flex flex-col items-center justify-start absolute top-0">
                 <h1 className="my-auto text-3xl text-foreground font-bold">
-                    {isAuthenticated && `Welcome back ${user?.name}!`}
+                    {user && `Welcome back ${user?.name}!`}
                 </h1>
             </main>
         </>

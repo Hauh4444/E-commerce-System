@@ -4,8 +4,6 @@ import { type LoginResponse } from "@/api/auth";
 
 export type AuthContextValue = {
     user: LoginResponse["user"] | null;
-    token: string | null;
-    isAuthenticated: boolean;
     register: (email: string, password: string, name: string) => Promise<void>;
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;

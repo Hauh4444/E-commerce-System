@@ -10,7 +10,7 @@ import { type CartItem } from "@/features/cart/CartContext";
 import { useCart } from "@/features/cart/useCart";
 import { useLists } from "@/features/lists/useLists";
 
-import { ProductStars } from "./ProductStars.tsx";
+import { ProductStars } from "./ProductStars";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";

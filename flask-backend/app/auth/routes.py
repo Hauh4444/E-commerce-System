@@ -6,9 +6,8 @@ from werkzeug.security import check_password_hash
 from pydantic import BaseModel, EmailStr, constr, ValidationError
 
 from app.config import Config
-from app.extensions.mongo import serialize_document
 from app.extensions.redis import get_redis_client
-from app.auth import auth_required, create_access_token, AuthRepository
+from app.auth import auth_required, AuthRepository, generate_user_response
 from app.settings import SettingsRepository
 from app.lists import ListsRepository
 from app.utils import error_response
@@ -31,25 +30,6 @@ class LoginSchema(BaseModel):
     password: constr(min_length=8)
 
 
-def generate_user_response(user):
-    access_token = create_access_token(
-        subject=str(user["_id"]),
-        claims={"email": user["email"], "role": user.get("role", "customer")},
-    )
-    return {
-        "access_token": access_token,
-        "token_type": "Bearer",
-        "user": serialize_document(
-            {
-                "_id": user["_id"],
-                "name": user["name"],
-                "email": user["email"],
-                "role": user.get("role", "customer"),
-            }
-        ),
-    }
-
-
 @auth_bp.post("/register")
 def register():
     payload = request.get_json()
@@ -64,13 +44,13 @@ def register():
     if auth_repo.find_user_by_email(email=data.email):
         return error_response("email_in_use", status=HTTPStatus.CONFLICT)
 
-    user_doc = auth_repo.create_user(name=data.name, email=data.email, password=data.password)
+    user = auth_repo.create_user(name=data.name, email=data.email, password=data.password)
 
-    settings_repo.create_settings(user_id=user_doc["user_id"])
-    lists_repo.create_list(user_id=user_doc["user_id"], name="Wishlist", product_ids=[])
+    settings_repo.create_settings(user_id=user["user_id"])
+    lists_repo.create_list(user_id=user["user_id"], name="Wishlist", product_ids=[])
 
-    response_body = generate_user_response(user=user_doc)
-    return jsonify(response_body), HTTPStatus.CREATED
+    response_body, _ = generate_user_response(user=user)
+    return response_body, HTTPStatus.CREATED
 
 
 @auth_bp.post("/login")
@@ -88,27 +68,21 @@ def login():
     if not user or not check_password_hash(pwhash=user["password_hash"], password=data.password):
         return error_response("invalid_credentials", status=HTTPStatus.UNAUTHORIZED)
 
-    access_token = create_access_token(
-        subject=str(user["_id"]),
-        claims={"email": user["email"], "role": user.get("role", "customer")},
-    )
-
-    user_data = serialize_document({
-        "_id": user["_id"],
-        "name": user["name"],
-        "email": user["email"],
-        "role": user.get("role", "customer"),
-    })
+    response_body, access_token = generate_user_response(user=user)
 
     redis_client = get_redis_client()
     redis_key = f"user_session:{access_token}"
-    redis_client.set(redis_key, json.dumps(user_data), ex=(60 * Config.JWT_ACCESS_EXPIRES_MINUTES))
+    redis_client.set(
+        redis_key,
+        json.dumps({
+            "user_id": str(user["_id"]),
+            "role": user.get("role", "customer"),
+            "email": user["email"],
+        }),
+        ex=(60 * Config.JWT_ACCESS_EXPIRES_MINUTES)
+    )
 
-    return jsonify({
-        "access_token": access_token,
-        "token_type": "Bearer",
-        "user": user_data,
-    }), HTTPStatus.OK
+    return response_body, HTTPStatus.OK
 
 
 @auth_bp.delete("/delete")

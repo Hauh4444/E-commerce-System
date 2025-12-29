@@ -1,9 +1,6 @@
 import { apiConfig, baseHeaders } from "@/config";
-import { loadAuth } from "@/features/auth/authStorage";
 
 export type RegisterResponse = {
-    access_token: string;
-    token_type: string;
     user: {
         id: string;
         name: string;
@@ -19,8 +16,6 @@ export type RegisterPayload = {
 };
 
 export type LoginResponse = {
-    access_token: string;
-    token_type: string;
     user: {
         id: string;
         name: string;
@@ -34,20 +29,12 @@ export type LoginPayload = {
     password: string;
 };
 
-export const authHeaders = () => {
-    const auth = loadAuth();
-    return {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: auth?.token ? `Bearer ${auth.token}` : "",
-    };
-};
-
 export const registerRequest = async (
     payload: RegisterPayload
 ): Promise<RegisterResponse> => {
     const response = await fetch(apiConfig.auth.register, {
         method: "POST",
+        credentials: "include",
         headers: baseHeaders(),
         body: JSON.stringify(payload),
     });
@@ -61,7 +48,7 @@ export const registerRequest = async (
         throw new Error(message);
     }
 
-    return await loginRequest(payload);
+    return (await response.json()) as RegisterResponse;
 };
 
 export const loginRequest = async (
@@ -69,6 +56,7 @@ export const loginRequest = async (
 ): Promise<LoginResponse> => {
     const response = await fetch(apiConfig.auth.login, {
         method: "POST",
+        credentials: "include",
         headers: baseHeaders(),
         body: JSON.stringify(payload),
     });
@@ -82,14 +70,15 @@ export const loginRequest = async (
         throw new Error(message);
     }
 
-    return await response.json() as Promise<LoginResponse>;
+    return (await response.json()) as LoginResponse;
 };
 
 export const deleteAccountRequest = async (): Promise<void> => {
     const response = await fetch(apiConfig.auth.deleteAccount, {
         method: "DELETE",
-        headers: authHeaders()
-    })
+        credentials: "include",
+        headers: baseHeaders(),
+    });
 
     if (!response.ok) {
         const errorBody = await response.json().catch(() => ({}));
@@ -99,4 +88,4 @@ export const deleteAccountRequest = async (): Promise<void> => {
                 : "Unexpected error deleting account.";
         throw new Error(message);
     }
-}
+};

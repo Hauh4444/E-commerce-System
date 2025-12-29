@@ -1,5 +1,4 @@
-import { apiConfig } from "@/config";
-import { authHeaders } from "@/api/auth";
+import { apiConfig, baseHeaders } from "@/config";
 
 export type List = {
     id: string;
@@ -22,7 +21,8 @@ export type UpdateListPayload = {
 export const getListsRequest = async (): Promise<ListsResponse> => {
     const response = await fetch(apiConfig.lists.base, {
         method: "GET",
-        headers: authHeaders(),
+        credentials: "include",
+        headers: baseHeaders(),
     });
 
     if (!response.ok) {
@@ -40,7 +40,8 @@ export const createListRequest = async (
 ): Promise<List> => {
     const response = await fetch(apiConfig.lists.base, {
         method: "POST",
-        headers: authHeaders(),
+        credentials: "include",
+        headers: baseHeaders(),
         body: JSON.stringify(payload),
     });
 
@@ -60,7 +61,8 @@ export const updateListRequest = async (
 ): Promise<List> => {
     const response = await fetch(apiConfig.lists.detail(listId), {
         method: "PUT",
-        headers: authHeaders(),
+        credentials: "include",
+        headers: baseHeaders(),
         body: JSON.stringify(payload),
     });
 
@@ -80,7 +82,8 @@ export const addProductToListRequest = async (
 ): Promise<List> => {
     const response = await fetch(apiConfig.lists.addProduct(listId, productId), {
         method: "POST",
-        headers: authHeaders(),
+        credentials: "include",
+        headers: baseHeaders(),
     });
 
     if (!response.ok) {
@@ -101,7 +104,8 @@ export const removeProductFromListRequest = async (
 ): Promise<List> => {
     const response = await fetch(apiConfig.lists.removeProduct(listId, productId), {
         method: "DELETE",
-        headers: authHeaders(),
+        credentials: "include",
+        headers: baseHeaders(),
     });
 
     if (!response.ok) {
@@ -121,7 +125,8 @@ export const deleteListRequest = async (
 ): Promise<void> => {
     const response = await fetch(apiConfig.lists.detail(listId), {
         method: "DELETE",
-        headers: authHeaders(),
+        credentials: "include",
+        headers: baseHeaders(),
     });
 
     if (!response.ok) {

@@ -1,16 +1,12 @@
 from datetime import date, datetime
-from typing import Optional, Union
+from typing import Union
 
 from bson import ObjectId
 from bson.errors import InvalidId
 
 
-def parse_object_id(oid: str) -> Optional[ObjectId]:
-    """
-    Convert a string to a MongoDB ObjectId.
-
-    This function attempts to create a `bson.ObjectId` from the given string.
-    If the string is not a valid ObjectId, the function returns `None`.
+def parse_object_id(oid: str):
+    """Convert a string to a MongoDB ObjectId.
 
     Args:
         oid (str): The string representation of the ObjectId to parse.
@@ -24,9 +20,8 @@ def parse_object_id(oid: str) -> Optional[ObjectId]:
         return None
 
 
-def serialize_id(value: Union[ObjectId, str, None]) -> Optional[str]:
-    """
-    Serialize a MongoDB ObjectId or string to a string.
+def serialize_id(value: Union[ObjectId, str, None]):
+    """Serialize a MongoDB ObjectId or string to a string.
 
     Args:
         value (Union[ObjectId, str, None]): The value to serialize.
@@ -41,12 +36,8 @@ def serialize_id(value: Union[ObjectId, str, None]) -> Optional[str]:
     return value
 
 
-def serialize_document(document: dict[str, any]) -> dict[str, any]:
-    """
-    Serialize a MongoDB document for JSON responses.
-
-    Converts ObjectId and datetime/date objects to strings,
-    and renames '_id' to 'id'.
+def serialize_document(document: dict[str, any]):
+    """Serialize a MongoDB document for JSON responses.
 
     Args:
         document (dict[str, any]): The MongoDB document to serialize.
@@ -60,9 +51,8 @@ def serialize_document(document: dict[str, any]) -> dict[str, any]:
     return serialized
 
 
-def _serialize_recursive(value: any) -> any:
-    """
-    Recursively serialize values in a document.
+def _serialize_recursive(value: any):
+    """Recursively serialize values in a document.
 
     Args:
         value (any): The value to serialize.

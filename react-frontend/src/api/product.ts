@@ -1,5 +1,4 @@
 import { apiConfig, baseHeaders } from "@/config";
-import { authHeaders } from "@/api/auth";
 
 export type Product = {
     id: string;
@@ -102,7 +101,8 @@ export const createProductRequest = async (
 ): Promise<Product> => {
     const response = await fetch(apiConfig.products.base, {
         method: "POST",
-        headers: authHeaders(),
+        credentials: "include",
+        headers: baseHeaders(),
         body: JSON.stringify(payload),
     });
 
@@ -124,7 +124,8 @@ export const updateProductRequest = async (
 ): Promise<Product> => {
     const response = await fetch(apiConfig.products.detail(productId), {
         method: "PUT",
-        headers: authHeaders(),
+        credentials: "include",
+        headers: baseHeaders(),
         body: JSON.stringify(payload),
     });
 
@@ -145,7 +146,8 @@ export const deleteProductRequest = async (
 ): Promise<{ deleted: boolean; product_id: string }> => {
     const response = await fetch(apiConfig.products.detail(productId), {
         method: "DELETE",
-        headers: authHeaders(),
+        credentials: "include",
+        headers: baseHeaders(),
     });
 
     if (!response.ok) {

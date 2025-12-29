@@ -7,7 +7,7 @@ import { type CartItem } from "@/features/cart/CartContext";
 import { useCart } from "@/features/cart/useCart";
 
 import { Header } from "@/components/Header";
-import { ProductStars } from "@/components/ProductStars.tsx";
+import { ProductStars } from "@/components/ProductStars";
 import { Button } from "@/components/ui/button";
 
 const ProductPage = () => {

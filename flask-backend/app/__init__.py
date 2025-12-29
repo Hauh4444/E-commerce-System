@@ -1,20 +1,20 @@
 from typing import Optional
 
-from flask import Flask, jsonify
+from flask import jsonify, Flask
 from flask_cors import CORS
 
-from app.auth import auth_bp
-from app.products import products_bp
-from app.payments import payments_bp
-from app.lists import lists_bp
-from app.settings import settings_bp
+from app.auth.routes import auth_bp
+from app.products.routes import products_bp
+from app.payments.routes import payments_bp
+from app.lists.routes import lists_bp
+from app.settings.routes import settings_bp
 
 from app.config import Config
 from app.extensions.mongo import init_mongo
 from app.extensions.redis import init_redis
 
 
-def register_routes(app: Flask) -> None:
+def register_routes(app: Flask):
     """
     Register all Flask blueprints for the application.
 
@@ -34,7 +34,7 @@ def register_routes(app: Flask) -> None:
 
 
 
-def create_app(config_object: Optional[type[Config]] = None) -> Flask:
+def create_app(config_object: Optional[type[Config]] = None):
     """
     Application factory for the ecommerce backend.
 
@@ -51,7 +51,7 @@ def create_app(config_object: Optional[type[Config]] = None) -> Flask:
     init_redis(app)
     register_routes(app)
 
-    CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
+    CORS(app, origins=Config.FRONTEND_URL, supports_credentials=True)
 
     @app.route("/health", methods=["GET"])
     def health_check():

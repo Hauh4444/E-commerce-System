@@ -19,6 +19,7 @@ class CheckoutItem(BaseModel):
     quantity: conint(ge=1)
     currency: constr(min_length=1)
 
+
 class CheckoutSessionSchema(BaseModel):
     items: list[CheckoutItem]
 

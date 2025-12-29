@@ -6,7 +6,6 @@ export type ListsContextValue = {
     lists: List[];
     loading: boolean;
     error: string | null;
-
     fetchLists: () => Promise<void>;
     createList: (name: string) => Promise<List>;
     updateList: (id: string, name: string) => Promise<List>;

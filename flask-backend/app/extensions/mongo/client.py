@@ -2,9 +2,8 @@ from typing import Optional
 
 from flask import Flask, current_app, g
 from pymongo import MongoClient
-from pymongo.database import Database
 
-def init_mongo(app: Flask) -> None:
+def init_mongo(app: Flask):
     """
     Initialize MongoDB support for a Flask application.
 
@@ -15,13 +14,13 @@ def init_mongo(app: Flask) -> None:
     """
 
     @app.teardown_appcontext
-    def close_connection(_: Optional[BaseException] = None) -> None:
+    def close_connection(_: Optional[BaseException] = None):
         client: Optional[MongoClient] = g.pop("mongo_client", None)
         if client is not None:
             client.close()
 
 
-def get_mongo_db(app: Optional[Flask] = None) -> Database:
+def get_mongo_db(app: Optional[Flask] = None):
     """
     Get the MongoDB database instance for the current request context.
 

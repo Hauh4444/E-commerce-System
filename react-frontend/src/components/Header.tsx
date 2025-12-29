@@ -4,7 +4,6 @@ import { Search, Settings, User, LogOut, List, ShoppingCart } from "lucide-react
 
 import { useAuth } from "@/features/auth/useAuth";
 import { useCart } from "@/features/cart/useCart";
-import { useToast } from "@/features/toast/useToast";
 
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -20,26 +19,17 @@ const Header = forwardRef<
     HeaderProps
 >((props, ref: ForwardedRef<HTMLElement>) => {
     const navigate = useNavigate();
-    const { user, logout, error } = useAuth();
+    const { user, logout } = useAuth();
     const { totalItems } = useCart();
-    const { toast } = useToast();
     const [query, setQuery] = useState("");
 
     const handleSearch = () => {
         if (!query) return;
-
         navigate(`/search?query=${encodeURIComponent(query.trim())}`);
     }
 
     const handleSignOut = async () => {
         logout();
-
-        if (error) {
-            toast({title: "Error", description: error, variant: "destructive"});
-        } else {
-            toast({ title: "Signed out", description: "You have been signed out successfully" });
-        }
-
         navigate("/");
     };
 

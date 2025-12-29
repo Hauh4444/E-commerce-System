@@ -21,5 +21,9 @@ class Config:
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", SECRET_KEY)
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
     JWT_ACCESS_EXPIRES_MINUTES: int = int(os.getenv("JWT_ACCESS_EXPIRES_MINUTES", "43200"))
+    JWT_COOKIE_NAME: str = os.getenv("JWT_COOKIE_NAME", "access_token")
+    JWT_COOKIE_SECURE: bool = os.getenv("JWT_COOKIE_SECURE", "0") == "1"
+    JWT_COOKIE_SAMESITE: str = os.getenv("JWT_COOKIE_SAMESITE", "Lax")
+    JWT_COOKIE_DOMAIN: str | None = os.getenv("JWT_COOKIE_DOMAIN", None)
 
     STRIPE_SECRET_KEY: str = os.getenv("STRIPE_SECRET_KEY", "change-me")

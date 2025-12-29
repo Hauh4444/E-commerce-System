@@ -1,5 +1,4 @@
-import { apiConfig } from "@/config.ts";
-import { authHeaders } from "@/api/auth";
+import { apiConfig, baseHeaders } from "@/config";
 
 export interface Settings {
     loginAlerts: boolean;
@@ -13,7 +12,8 @@ export interface Settings {
 export const getSettings = async (): Promise<Settings | null> => {
     const response = await fetch(apiConfig.settings.base, {
         method: "GET",
-        headers: authHeaders(),
+        credentials: "include",
+        headers: baseHeaders(),
     });
 
     if (!response.ok) {
@@ -32,7 +32,7 @@ export const updateSettingsRequest = async (
     const response = await fetch(apiConfig.settings.base, {
         method: "PUT",
         credentials: "include",
-        headers: authHeaders(),
+        headers: baseHeaders(),
         body: JSON.stringify(payload),
     });
 

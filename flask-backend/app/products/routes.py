@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, request
 from pydantic import BaseModel, Field, constr, confloat, conint, ValidationError
 
 from app.extensions.mongo import serialize_id, serialize_document
+from app.auth import auth_required
 from app.products import ProductsRepository
 from app.utils import error_response
 
@@ -50,8 +51,17 @@ def list_products():
         return error_response(f"Database error: {str(e)}", HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
+@products_bp.get("/<product_id>")
+def get_product(product_id: str):
+    product = products_repo.get_product_by_id(product_id=product_id)
+    if not product:
+        return error_response("product_not_found", HTTPStatus.NOT_FOUND)
+    return jsonify(serialize_document(product)), HTTPStatus.OK
+
+
 @products_bp.post("/")
-def create_product():
+@auth_required
+def create_product(user):
     payload = request.get_json()
     if payload is None:
         return error_response("invalid_json")
@@ -61,22 +71,15 @@ def create_product():
         return error_response("invalid_payload", details=e.errors())
 
     try:
-        product = products_repo.create_product(product_data=data.model_dump())
+        product = products_repo.create_product(user_id=user["id"], product_data=data.model_dump())
         return jsonify(serialize_document(product)), HTTPStatus.CREATED
     except Exception as e:
         return error_response(f"Database error: {str(e)}", HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
-@products_bp.get("/<product_id>")
-def get_product(product_id: str):
-    product = products_repo.get_product_by_id(product_id=product_id)
-    if not product:
-        return error_response("product_not_found", HTTPStatus.NOT_FOUND)
-    return jsonify(serialize_document(product)), HTTPStatus.OK
-
-
 @products_bp.put("/<product_id>")
-def update_product(product_id: str):
+@auth_required
+def update_product(user, product_id: str):
     payload = request.get_json()
     if payload is None:
         return error_response("invalid_json")
@@ -89,15 +92,16 @@ def update_product(product_id: str):
     if not updates:
         return error_response("no_updates_provided")
 
-    product = products_repo.update_product(product_id=product_id, updates=updates)
+    product = products_repo.update_product(user_id=user["id"], product_id=product_id, updates=updates)
     if not product:
         return error_response("product_not_found", HTTPStatus.NOT_FOUND)
     return jsonify(serialize_document(product)), HTTPStatus.OK
 
 
 @products_bp.delete("/<product_id>")
-def delete_product(product_id: str):
-    deleted = products_repo.delete_product(product_id=product_id)
+@auth_required
+def delete_product(user, product_id: str):
+    deleted = products_repo.delete_product(user_id=user["id"], product_id=product_id)
     if not deleted:
         return error_response("product_not_found", HTTPStatus.NOT_FOUND)
     return jsonify({"deleted": True, "product_id": serialize_id(product_id)}), HTTPStatus.OK
