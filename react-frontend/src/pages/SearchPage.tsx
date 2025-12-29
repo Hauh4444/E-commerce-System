@@ -33,6 +33,7 @@ const SearchPage = () => {
         const controller = new AbortController();
         fetchProducts(query, controller.signal).catch((productsError) => {
             if (controller.signal.aborted) return;
+
             console.error(productsError instanceof Error ? productsError.message : "Error fetching products");
         });
 
@@ -48,11 +49,11 @@ const SearchPage = () => {
                         {products ? products.length : 0} result{products && products.length != 1 && "s"} for "{query}":
                     </li>
                     {loading ? (
-                        <h2 className="text-2xl font-bold">Loading products...</h2>
+                        <h2 className="my-8 text-2xl font-bold">Loading products...</h2>
                     ) : (
                         <>
-                            {products && products.map((product) => (
-                                <li key={product.id}>
+                            {products && products.map((product, index) => (
+                                <li key={index}>
                                     <ProductCard variant="search" product={product} />
                                 </li>
                             ))}

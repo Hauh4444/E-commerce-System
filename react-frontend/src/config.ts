@@ -20,8 +20,11 @@ export const apiConfig = {
 
     products: {
         base: `${BASE}/products`,
-        list: `${BASE}/products`,
-        detail: (productId: string | number) => `${BASE}/products/${productId}`,
+        detail: (productId: string) => `${BASE}/products/${productId}`,
+        reviews: {
+            list: (productId: string) => `${BASE}/products/${productId}/reviews`,
+            detail: (productId: string, reviewId: string) => `${BASE}/products/${productId}/reviews/${reviewId}`,
+        }
     },
 
     payments: {
@@ -32,10 +35,8 @@ export const apiConfig = {
     lists: {
         base: `${BASE}/lists`,
         detail: (listId: string) => `${BASE}/lists/${listId}`,
-        addProduct: (listId: string, productId: string) =>
-            `${BASE}/lists/${listId}/product/${productId}`,
-        removeProduct: (listId: string, productId: string) =>
-            `${BASE}/lists/${listId}/product/${productId}`,
+        addProduct: (listId: string, productId: string) => `${BASE}/lists/${listId}/product/${productId}`,
+        removeProduct: (listId: string, productId: string) => `${BASE}/lists/${listId}/product/${productId}`,
     },
 
     settings: {

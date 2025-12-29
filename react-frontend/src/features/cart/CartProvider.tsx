@@ -34,11 +34,11 @@ export const CartProvider = ({children}: PropsWithChildren) => {
             saveCart(updated);
             setItems(updated);
 
-            toast({title: "Item added", description: `${item.name} added to cart.`});
+            toast({ title: "Item added", description: `${item.name} added to cart.` });
         } catch (cartError) {
             const message = cartError instanceof Error ? cartError.message : "Unable to add item to cart";
             setError(message);
-            toast({title: "Cart error", description: message, variant: "destructive"});
+            toast({ title: "Cart error", description: message, variant: "destructive" });
             throw cartError;
         }
     }, [toast]);
@@ -56,11 +56,11 @@ export const CartProvider = ({children}: PropsWithChildren) => {
             saveCart(updated);
             setItems(updated);
 
-            toast({title: "Item removed", description: `${itemToRemove?.name} removed from cart.`});
+            toast({ title: "Item removed", description: `${itemToRemove?.name} removed from cart.` });
         } catch (cartError) {
             const message = cartError instanceof Error ? cartError.message : "Unable to remove item from cart";
             setError(message);
-            toast({title: "Cart error", description: message, variant: "destructive"});
+            toast({ title: "Cart error", description: message, variant: "destructive" });
             throw cartError;
         }
     }, [toast]);
@@ -76,7 +76,7 @@ export const CartProvider = ({children}: PropsWithChildren) => {
         } catch (cartError) {
             const message = cartError instanceof Error ? cartError.message : "Unable to update quantity";
             setError(message);
-            toast({title: "Cart error", description: message, variant: "destructive"});
+            toast({ title: "Cart error", description: message, variant: "destructive" });
             throw cartError;
         }
     }, [toast]);
@@ -88,11 +88,11 @@ export const CartProvider = ({children}: PropsWithChildren) => {
             setItems([]);
             saveCart([]);
 
-            toast({title: "Cart cleared", description: "All items have been removed from the cart."});
+            toast({ title: "Cart cleared", description: "All items have been removed from the cart." });
         } catch (cartError) {
             const message = cartError instanceof Error ? cartError.message : "Unable to clear cart";
             setError(message);
-            toast({title: "Cart error", description: message, variant: "destructive"});
+            toast({ title: "Cart error", description: message, variant: "destructive" });
             throw cartError;
         }
     }, [toast]);
@@ -108,14 +108,14 @@ export const CartProvider = ({children}: PropsWithChildren) => {
             if (!session.url) {
                 const message = "Unable to start checkout.";
                 setError(message);
-                toast({title: "Checkout failed", description: message, variant: "destructive"});
+                toast({ title: "Checkout failed", description: message, variant: "destructive" });
                 return;
             }
             window.location.href = session.url;
         } catch (cartError) {
             const message = cartError instanceof Error ? cartError.message : "Something went wrong during checkout.";
             setError(message);
-            toast({title: "Checkout error", description: message, variant: "destructive"});
+            toast({ title: "Checkout error", description: message, variant: "destructive" });
             throw cartError;
         } finally {
             setLoading(false);

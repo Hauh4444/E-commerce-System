@@ -25,6 +25,7 @@ const Header = forwardRef<
 
     const handleSearch = () => {
         if (!query) return;
+
         navigate(`/search?query=${encodeURIComponent(query.trim())}`);
     }
 

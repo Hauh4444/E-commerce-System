@@ -48,8 +48,8 @@ const ListProducts = forwardRef<
 
     return (list &&
         <ul ref={ref} className="space-y-6">
-            {products.map(product => (
-                <li key={product.id}>
+            {products.map((product, index) => (
+                <li key={index}>
                     <ProductCard variant="list" product={product} list={list!} />
                 </li>
             ))}

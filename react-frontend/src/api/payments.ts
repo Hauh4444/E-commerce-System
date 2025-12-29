@@ -1,6 +1,7 @@
 import { apiConfig, baseHeaders } from "@/config";
 
 import { type CartItem } from "@/features/cart/CartContext";
+import { handleResponseError } from "@/utils/api.ts";
 
 export type CheckoutItem = {
     product_name: string;
@@ -26,15 +27,8 @@ export const createCheckoutSessionRequest = async (
         headers: baseHeaders(),
         body: JSON.stringify(payload),
     });
-
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        const message =
-            typeof errorBody.error === "string"
-                ? errorBody.error
-                : "Unable to create checkout session.";
-        throw new Error(message);
-    }
+    const defaultErrorMessage = "Unable to create checkout session.";
+    await handleResponseError(response, defaultErrorMessage);
 
     return await response.json() as CheckoutSessionResponse;
 };

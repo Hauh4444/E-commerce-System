@@ -1,4 +1,5 @@
 import { apiConfig, baseHeaders } from "@/config";
+import { handleResponseError } from "@/utils/api";
 
 export type Product = {
     id: string;
@@ -17,18 +18,15 @@ export type Product = {
     updated_at?: string;
 };
 
-export type ProductsResponse = Product[];
-
-export type CreateProductPayload = {
-    name: string;
-    description?: string;
-    price: number;
-    currency: string;
-    inventory?: number;
-    category?: string;
-    images?: string[];
-    attributes?: Record<string, unknown>;
-};
+export type ProductReview = {
+    id: string;
+    product_id: string;
+    user_id: string;
+    rating: number;
+    title: string;
+    description: string;
+    created_at?: string;
+}
 
 export type ProductsRequestByQuery = {
     query: string;
@@ -41,6 +39,21 @@ export type ProductsRequestByIds = {
 };
 
 export type ProductsRequestParams = ProductsRequestByQuery | ProductsRequestByIds;
+
+export type ProductReviewsResponse = ProductReview[];
+
+export type ProductsResponse = Product[];
+
+export type CreateProductPayload = {
+    name: string;
+    description?: string;
+    price: number;
+    currency: string;
+    inventory?: number;
+    category?: string;
+    images?: string[];
+    attributes?: Record<string, unknown>;
+};
 
 export const getProductsRequest = async (
     params: ProductsRequestParams,
@@ -63,15 +76,8 @@ export const getProductsRequest = async (
         headers: baseHeaders(),
         signal: options?.signal,
     });
-
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        const message =
-            typeof errorBody.error === "string"
-                ? errorBody.error
-                : "Unable to fetch products.";
-        throw new Error(message);
-    }
+    const defaultErrorMessage = "Unable to fetch products.";
+    await handleResponseError(response, defaultErrorMessage);
 
     return (await response.json()) as ProductsResponse;
 };
@@ -83,18 +89,24 @@ export const getProductByIdRequest = async (
         method: "GET",
         headers: baseHeaders(),
     });
-
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        const message =
-            typeof errorBody.error === "string"
-                ? errorBody.error
-                : "Unable to fetch product.";
-        throw new Error(message);
-    }
+    const defaultErrorMessage = "Unable to fetch product.";
+    await handleResponseError(response, defaultErrorMessage);
 
     return await response.json() as Promise<Product>;
 };
+
+export const getProductReviewsRequest = async (
+    productId: string
+): Promise<ProductReviewsResponse> => {
+    const response = await fetch(apiConfig.products.reviews.list(productId), {
+        method: "GET",
+        headers: baseHeaders(),
+    })
+    const defaultErrorMessage = "Unable to fetch product reviews.";
+    await handleResponseError(response, defaultErrorMessage);
+
+    return await response.json() as Promise<ProductReviewsResponse>;
+}
 
 export const createProductRequest = async (
     payload: CreateProductPayload
@@ -105,15 +117,8 @@ export const createProductRequest = async (
         headers: baseHeaders(),
         body: JSON.stringify(payload),
     });
-
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        const message =
-            typeof errorBody.error === "string"
-                ? errorBody.error
-                : "Unable to create product.";
-        throw new Error(message);
-    }
+    const defaultErrorMessage = "Unable to create product.";
+    await handleResponseError(response, defaultErrorMessage);
 
     return await response.json() as Promise<Product>;
 };
@@ -128,36 +133,20 @@ export const updateProductRequest = async (
         headers: baseHeaders(),
         body: JSON.stringify(payload),
     });
-
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        const message =
-            typeof errorBody.error === "string"
-                ? errorBody.error
-                : "Unable to update product.";
-        throw new Error(message);
-    }
+    const defaultErrorMessage = "Unable to update product.";
+    await handleResponseError(response, defaultErrorMessage);
 
     return await response.json() as Promise<Product>;
 };
 
 export const deleteProductRequest = async (
     productId: string
-): Promise<{ deleted: boolean; product_id: string }> => {
+): Promise<void> => {
     const response = await fetch(apiConfig.products.detail(productId), {
         method: "DELETE",
         credentials: "include",
         headers: baseHeaders(),
     });
-
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        const message =
-            typeof errorBody.error === "string"
-                ? errorBody.error
-                : "Unable to delete product.";
-        throw new Error(message);
-    }
-
-    return await response.json();
+    const defaultErrorMessage = "Unable to delete product.";
+    await handleResponseError(response, defaultErrorMessage);
 };

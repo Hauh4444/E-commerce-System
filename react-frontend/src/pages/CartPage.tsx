@@ -11,6 +11,7 @@ const CartPage = () => {
         // We have the window confirm here instead of in useCart since we call clear cart after checkout in HomePage component
         const confirmed = window.confirm("Are you sure you want to clear your cart?");
         if (!confirmed) return;
+
         clearCart();
     }
 
@@ -23,8 +24,8 @@ const CartPage = () => {
                         <li className="mt-6 pl-4 text-xl text-left">
                             Your cart ({totalItems} item{totalItems != 1 && "s"}):
                         </li>
-                        {items.map((item) => (
-                            <li key={item.id}>
+                        {items.map((item, index) => (
+                            <li key={index}>
                                 <ProductCard variant="cart" product={item} />
                             </li>
                         ))}

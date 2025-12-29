@@ -16,6 +16,7 @@ export const useSelectedList = (lists: List[]) => {
 
     useEffect(() => {
         if (!lists.length) return;
+
         const list = listId ? lists.find(l => l.id === listId) : lists[0];
         setSelectedList(list || lists[0]);
     }, [lists, listId]);
@@ -58,6 +59,7 @@ export const useSelectedList = (lists: List[]) => {
         }
         const list = lists.find(l => l.id === id);
         if (!list) return;
+
         setSelectedList(list);
         setMode("view");
         navigate(`/lists/${list.id}`);

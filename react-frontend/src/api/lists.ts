@@ -1,4 +1,5 @@
 import { apiConfig, baseHeaders } from "@/config";
+import { handleResponseError } from "@/utils/api.ts";
 
 export type List = {
     id: string;
@@ -24,13 +25,8 @@ export const getListsRequest = async (): Promise<ListsResponse> => {
         credentials: "include",
         headers: baseHeaders(),
     });
-
-    if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        const msg =
-            typeof body.error === "string" ? body.error : "Unable to fetch lists.";
-        throw new Error(msg);
-    }
+    const defaultErrorMessage = "Unable to fetch lists.";
+    await handleResponseError(response, defaultErrorMessage);
 
     return await response.json();
 };
@@ -44,13 +40,8 @@ export const createListRequest = async (
         headers: baseHeaders(),
         body: JSON.stringify(payload),
     });
-
-    if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        const msg =
-            typeof body.error === "string" ? body.error : "Unable to create list.";
-        throw new Error(msg);
-    }
+    const defaultErrorMessage = "Unable to create list.";
+    await handleResponseError(response, defaultErrorMessage);
 
     return await response.json();
 };
@@ -65,13 +56,8 @@ export const updateListRequest = async (
         headers: baseHeaders(),
         body: JSON.stringify(payload),
     });
-
-    if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        const msg =
-            typeof body.error === "string" ? body.error : "Unable to update list.";
-        throw new Error(msg);
-    }
+    const defaultErrorMessage = "Unable to update list.";
+    await handleResponseError(response, defaultErrorMessage);
 
     return await response.json();
 };
@@ -85,15 +71,8 @@ export const addProductToListRequest = async (
         credentials: "include",
         headers: baseHeaders(),
     });
-
-    if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        const msg =
-            typeof body.error === "string"
-                ? body.error
-                : "Unable to add product to list.";
-        throw new Error(msg);
-    }
+    const defaultErrorMessage = "Unable to add product to list.";
+    await handleResponseError(response, defaultErrorMessage);
 
     return await response.json();
 };
@@ -107,15 +86,8 @@ export const removeProductFromListRequest = async (
         credentials: "include",
         headers: baseHeaders(),
     });
-
-    if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        const msg =
-            typeof body.error === "string"
-                ? body.error
-                : "Unable to remove product from list.";
-        throw new Error(msg);
-    }
+    const defaultErrorMessage = "Unable to remove product from list.";
+    await handleResponseError(response, defaultErrorMessage);
 
     return await response.json();
 };
@@ -128,11 +100,6 @@ export const deleteListRequest = async (
         credentials: "include",
         headers: baseHeaders(),
     });
-
-    if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        const msg =
-            typeof body.error === "string" ? body.error : "Unable to delete list.";
-        throw new Error(msg);
-    }
+    const defaultErrorMessage = "Unable to delete list.";
+    await handleResponseError(response, defaultErrorMessage);
 };

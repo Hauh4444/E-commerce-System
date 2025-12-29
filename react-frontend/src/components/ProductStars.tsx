@@ -30,7 +30,7 @@ const ProductStars = forwardRef<
                 ))}
 
                 <ul
-                    className="absolute top-0 left-0 flex overflow-hidden p-0 m-0 pointer-events-none"
+                    className="absolute top-[50%] left-0 flex overflow-hidden p-0 m-0 pointer-events-none translate-y-[-50%]"
                     aria-hidden="true"
                 >
                     {Array.from({ length: fullStars }).map((_, i) => (

@@ -51,23 +51,16 @@ const ProductCard = forwardRef<
 
     const handleAddToCart = (e: MouseEvent<HTMLButtonElement>, product: Product) => {
         e.preventDefault();
+        if (!product) return;
 
-        if (product) {
-            const cartItem: CartItem = {
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                currency: product.currency,
-                quantity: 1,
-                images: product.images,
-            };
-            addItem(cartItem);
-        }
+        const { id, name, price, currency, images } = product;
+        addItem({ id, name, price, currency, images, quantity: 1 });
     }
 
     const handleChangeQuantity = (id: string, quantity: number) => {
         // TODO: more appropriate handling of changing quantity, when user clears input and quantity becomes null item should not be removed
         if (quantity > 50) return;
+
         if (quantity === 0) {
             removeItem(id);
             return;
@@ -166,8 +159,8 @@ const ProductCard = forwardRef<
                             {lists.length === 0 ? (
                                 <DropdownMenuItem disabled>No lists</DropdownMenuItem>
                             ) : (
-                                lists.map((item) => (
-                                    <DropdownMenuItem key={item.id} className="justify-center" onClick={() => addProductToList(item.id, product.id)}>
+                                lists.map((item, index) => (
+                                    <DropdownMenuItem key={index} className="justify-center" onClick={() => addProductToList(item.id, product.id)}>
                                         {item.name}
                                     </DropdownMenuItem>
                                 ))
@@ -210,8 +203,8 @@ const ProductCard = forwardRef<
                                 {lists.length === 0 ? (
                                     <DropdownMenuItem disabled>No lists</DropdownMenuItem>
                                 ) : (
-                                    lists.map((item) => (item.id !== list.id &&
-                                        <DropdownMenuItem key={item.id} className="justify-center" onClick={() => addProductToList(item.id, product.id)}>
+                                    lists.map((item, index) => (item.id !== list.id &&
+                                        <DropdownMenuItem key={index} className="justify-center" onClick={() => addProductToList(item.id, product.id)}>
                                             {item.name}
                                         </DropdownMenuItem>
                                     ))

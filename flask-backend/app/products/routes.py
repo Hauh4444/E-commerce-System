@@ -1,6 +1,7 @@
 from http import HTTPStatus
 from flask import Blueprint, jsonify, request
 from pydantic import BaseModel, Field, constr, confloat, conint, ValidationError
+from urllib3.exceptions import HTTPWarning
 
 from app.extensions.mongo import serialize_id, serialize_document
 from app.auth import auth_required
@@ -57,6 +58,14 @@ def get_product(product_id: str):
     if not product:
         return error_response("product_not_found", HTTPStatus.NOT_FOUND)
     return jsonify(serialize_document(product)), HTTPStatus.OK
+
+
+@products_bp.get("/<product_id>/reviews")
+def get_product_reviews(product_id: str):
+    product_reviews = products_repo.get_product_reviews(product_id=product_id)
+    if not product_reviews:
+        return error_response("product_reviews_not_found", HTTPStatus.NOT_FOUND)
+    return jsonify(serialize_document(product_reviews)), HTTPStatus.OK
 
 
 @products_bp.post("/")

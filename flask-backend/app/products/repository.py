@@ -15,6 +15,10 @@ class ProductsRepository:
     def products(self):
         return self.db.products
 
+    @property
+    def product_reviews(self):
+        return self.db.reviews
+
     def list_products(self, query: str = "", ids: list[str] = None, limit: int = 50):
         mongo_query = {}
         if ids:
@@ -28,6 +32,12 @@ class ProductsRepository:
 
         return list(self.products.find(mongo_query).sort("created_at", -1).limit(limit))
 
+    def get_product_by_id(self, product_id: str):
+        return self.products.find_one({"_id": parse_object_id(product_id)})
+
+    def get_product_reviews(self, product_id: str):
+        return list(self.product_reviews.find({"product_id": parse_object_id(product_id)}))
+
     def create_product(self, user_id: str, product_data: dict):
         product_data.update({
             "user_id": parse_object_id(user_id),
@@ -38,9 +48,6 @@ class ProductsRepository:
         })
         inserted_id = self.products.insert_one(product_data).inserted_id
         return self.products.find_one({"_id": inserted_id})
-
-    def get_product_by_id(self, product_id: str):
-        return self.products.find_one({"_id": parse_object_id(product_id)})
 
     def update_product(self, user_id: str, product_id: str, updates: dict):
         updates["updated_at"] = datetime.now()

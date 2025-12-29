@@ -1,4 +1,5 @@
 import { apiConfig, baseHeaders } from "@/config";
+import { handleResponseError } from "@/utils/api.ts";
 
 export interface Settings {
     loginAlerts: boolean;
@@ -15,13 +16,8 @@ export const getSettings = async (): Promise<Settings | null> => {
         credentials: "include",
         headers: baseHeaders(),
     });
-
-    if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        const msg =
-            typeof body.error === "string" ? body.error : "Unable to fetch settings.";
-        throw new Error(msg);
-    }
+    const defaultErrorMessage = "Unable to fetch settings.";
+    await handleResponseError(response, defaultErrorMessage);
 
     return await response.json();
 };
@@ -35,13 +31,6 @@ export const updateSettingsRequest = async (
         headers: baseHeaders(),
         body: JSON.stringify(payload),
     });
-
-    if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        const msg =
-            typeof body.error === "string" ? body.error : "Unable to update user settings.";
-        throw new Error(msg);
-    }
-
-    return await response.json();
+    const defaultErrorMessage = "Unable to update user settings.";
+    await handleResponseError(response, defaultErrorMessage);
 };

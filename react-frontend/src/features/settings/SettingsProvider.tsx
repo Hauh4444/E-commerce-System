@@ -51,6 +51,7 @@ export const SettingsProvider = ({ children }: PropsWithChildren) => {
 
     const fetchSettings = useCallback(async () => {
         if (!user) return;
+
         setLoading(true);
         setError(null);
 

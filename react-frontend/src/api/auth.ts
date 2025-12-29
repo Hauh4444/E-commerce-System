@@ -1,4 +1,5 @@
 import { apiConfig, baseHeaders } from "@/config";
+import {handleResponseError} from "@/utils/api.ts";
 
 export type RegisterResponse = {
     user: {
@@ -38,15 +39,8 @@ export const registerRequest = async (
         headers: baseHeaders(),
         body: JSON.stringify(payload),
     });
-
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        const message =
-            typeof errorBody.error === "string"
-                ? errorBody.error
-                : "Unable to register. Please check your input.";
-        throw new Error(message);
-    }
+    const defaultErrorMessage = "Unable to register. Please check your credentials.";
+    await handleResponseError(response, defaultErrorMessage);
 
     return (await response.json()) as RegisterResponse;
 };
@@ -60,15 +54,8 @@ export const loginRequest = async (
         headers: baseHeaders(),
         body: JSON.stringify(payload),
     });
-
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        const message =
-            typeof errorBody.error === "string"
-                ? errorBody.error
-                : "Unable to login. Please check your credentials.";
-        throw new Error(message);
-    }
+    const defaultErrorMessage = "Unable to login. Please check your credentials.";
+    await handleResponseError(response, defaultErrorMessage);
 
     return (await response.json()) as LoginResponse;
 };
@@ -79,13 +66,6 @@ export const deleteAccountRequest = async (): Promise<void> => {
         credentials: "include",
         headers: baseHeaders(),
     });
-
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        const message =
-            typeof errorBody.error === "string"
-                ? errorBody.error
-                : "Unexpected error deleting account.";
-        throw new Error(message);
-    }
+    const defaultErrorMessage = "Unexpected error deleting account.";
+    await handleResponseError(response, defaultErrorMessage);
 };

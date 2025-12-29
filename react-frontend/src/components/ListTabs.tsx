@@ -46,8 +46,8 @@ const ListTabs = forwardRef<
 
     return (
         <TabsList ref={ref} className="w-full h-auto overflow-x-auto mb-6">
-            {lists.map(list => (
-                <section key={list.id} className="relative flex-1">
+            {lists.map((list, index) => (
+                <section key={index} className="relative flex-1">
                     <TabsTrigger value={list.id} className="w-full py-2 px-2 flex-1 text-lg font-extrabold relative">
                         {canEdit(list) && isEditing ? (
                             <Input

@@ -18,6 +18,9 @@ class ListsRepository:
     def get_lists_for_user(self, user_id: str):
         return list(self.lists.find({"user_id": parse_object_id(user_id)}).sort("created_at", -1))
 
+    def get_list_by_id(self, user_id: str, list_id: str):
+        return self.lists.find_one({"_id": parse_object_id(list_id), "user_id": parse_object_id(user_id)})
+
     def create_list(self, user_id: str, name: str, product_ids: list[str] = None):
         product_ids = product_ids or []
         list_data = {
@@ -29,9 +32,6 @@ class ListsRepository:
         }
         inserted_id = self.lists.insert_one(list_data).inserted_id
         return self.lists.find_one({"_id": inserted_id})
-
-    def get_list_by_id(self, user_id: str, list_id: str):
-        return self.lists.find_one({"_id": parse_object_id(list_id), "user_id": parse_object_id(user_id)})
 
     def update_list(self, user_id: str, list_id: str, updates: dict):
         updates["updated_at"] = datetime.now()
