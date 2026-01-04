@@ -48,7 +48,7 @@ def list_products():
         products = products_repo.list_products(query=query_param, ids=ids_list, limit=limit)
         return jsonify([serialize_document(p) for p in products]), HTTPStatus.OK
     except Exception as e:
-        return error_response(f"Database error: {str(e)}", HTTPStatus.INTERNAL_SERVER_ERROR)
+        return error_response("Database error", details=str(e), status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
 @products_bp.get("/<product_id>")
@@ -76,13 +76,13 @@ def create_product(user):
     try:
         data = ProductCreateSchema(**payload)
     except ValidationError as e:
-        return error_response("invalid_payload", details=e.errors())
+        return error_response("invalid_payload", details=e.errors(), status=HTTPStatus.BAD_REQUEST)
 
     try:
         product = products_repo.create_product(user_id=user["id"], product_data=data.model_dump())
         return jsonify(serialize_document(product)), HTTPStatus.CREATED
     except Exception as e:
-        return error_response(f"Database error: {str(e)}", HTTPStatus.INTERNAL_SERVER_ERROR)
+        return error_response("Database error", details=str(e), status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
 @products_bp.put("/<product_id>")
@@ -94,7 +94,7 @@ def update_product(user, product_id: str):
     try:
         data = ProductUpdateSchema(**payload)
     except ValidationError as e:
-        return error_response("invalid_payload", details=e.errors())
+        return error_response("invalid_payload", details=e.errors(), status=HTTPStatus.BAD_REQUEST)
 
     updates = {k: v for k, v in data.model_dump(exclude_unset=True).items()}
     if not updates:

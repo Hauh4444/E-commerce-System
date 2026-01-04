@@ -40,7 +40,7 @@ def update_settings(user):
     try:
         data = SettingsUpdateSchema(**payload)
     except ValidationError as e:
-        return error_response("invalid_payload", details=e.errors())
+        return error_response("invalid_payload", details=e.errors(), status=HTTPStatus.BAD_REQUEST)
 
     updates = {k: v for k, v in data.model_dump(exclude_unset=True).items()}
     if not updates:

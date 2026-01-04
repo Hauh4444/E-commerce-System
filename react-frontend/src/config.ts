@@ -43,4 +43,9 @@ export const apiConfig = {
         base: `${BASE}/settings`,
         detail: (userId: string) => `${BASE}/settings/${userId}`,
     },
+
+    orders: {
+        base: `${BASE}/orders`,
+        detail: (orderId: string) => `${BASE}/orders/${orderId}`,
+    },
 } as const;

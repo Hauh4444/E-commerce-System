@@ -39,10 +39,10 @@ def register():
     try:
         data = RegisterSchema(**payload)
     except ValidationError as e:
-        return error_response("invalid_payload", details=e.errors())
+        return error_response("invalid_payload", details=e.errors(), status=HTTPStatus.BAD_REQUEST)
 
     if auth_repo.find_user_by_email(email=data.email):
-        return error_response("email_in_use", status=HTTPStatus.CONFLICT)
+        return error_response("email_in_use", HTTPStatus.CONFLICT)
 
     user = auth_repo.create_user(name=data.name, email=data.email, password=data.password)
 
@@ -62,11 +62,11 @@ def login():
     try:
         data = LoginSchema(**payload)
     except ValidationError as e:
-        return error_response("invalid_payload", details=e.errors())
+        return error_response("invalid_payload", details=e.errors(), status=HTTPStatus.BAD_REQUEST)
 
     user = auth_repo.find_user_by_email(email=data.email)
     if not user or not check_password_hash(pwhash=user["password_hash"], password=data.password):
-        return error_response("invalid_credentials", status=HTTPStatus.UNAUTHORIZED)
+        return error_response("invalid_credentials", HTTPStatus.UNAUTHORIZED)
 
     response_body, access_token = generate_user_response(user=user)
 
@@ -90,7 +90,7 @@ def login():
 def delete_account(user):
     db_user = auth_repo.find_user_by_id(user_id=user["id"])
     if not db_user:
-        return error_response("user_not_found", status=HTTPStatus.NOT_FOUND)
+        return error_response("user_not_found", HTTPStatus.NOT_FOUND)
 
     auth_repo.delete_user(user_id=user["id"])
 

@@ -5,7 +5,7 @@ from flask_cors import CORS
 
 from app.auth.routes import auth_bp
 from app.products.routes import products_bp
-from app.payments.routes import payments_bp
+from app.orders.routes import orders_bp
 from app.lists.routes import lists_bp
 from app.settings.routes import settings_bp
 
@@ -24,7 +24,7 @@ def register_routes(app: Flask):
     blueprints = [
         (products_bp, "/products"),
         (auth_bp, "/auth"),
-        (payments_bp, "/payments"),
+        (orders_bp, "/orders"),
         (lists_bp, "/lists"),
         (settings_bp, "/settings")
     ]

@@ -29,7 +29,7 @@ def list_lists(user):
         lists_cursor = lists_repo.get_lists_for_user(user_id=user["id"])
         return jsonify([serialize_document(l) for l in lists_cursor]), HTTPStatus.OK
     except Exception as e:
-        return error_response(f"Database error: {str(e)}", HTTPStatus.INTERNAL_SERVER_ERROR)
+        return error_response("Database error", details=str(e), status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
 @lists_bp.post("/")
@@ -42,7 +42,7 @@ def create_list(user):
     try:
         data = ListCreateSchema(**payload)
     except ValidationError as e:
-        return error_response("invalid_payload", details=e.errors())
+        return error_response("invalid_payload", details=e.errors(), status=HTTPStatus.BAD_REQUEST)
 
     if data.name == "Wishlist":
         return error_response("cannot_create_wishlist", HTTPStatus.FORBIDDEN)
@@ -51,7 +51,7 @@ def create_list(user):
         new_list = lists_repo.create_list(user_id=user["id"], name=data.name, product_ids=data.product_ids)
         return jsonify(serialize_document(new_list)), HTTPStatus.CREATED
     except Exception as e:
-        return error_response(f"Database error: {str(e)}", HTTPStatus.INTERNAL_SERVER_ERROR)
+        return error_response("Database error", details=str(e), status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
 @lists_bp.get("/<list_id>")
@@ -78,7 +78,7 @@ def update_list(user, list_id: str):
     try:
         data = ListUpdateSchema(**payload)
     except ValidationError as e:
-        return error_response("invalid_payload", details=e.errors())
+        return error_response("invalid_payload", details=e.errors(), status=HTTPStatus.BAD_REQUEST)
 
     if data.name == "Wishlist":
         return error_response("cannot_update_list", HTTPStatus.FORBIDDEN)

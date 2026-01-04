@@ -7,12 +7,15 @@ export interface AddressResult {
     lon: string;
 }
 
-export interface AddressContextValue {
+export interface AddressState {
     query: string;
     results: AddressResult[];
+    address: string;
     lat: number;
     lng: number;
-    address: string;
+}
+
+export interface AddressContextValue extends AddressState {
     searchAddress: (value: string) => void;
     selectAddress: (place: AddressResult) => void;
     setAddress: (value: string) => void;

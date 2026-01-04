@@ -1,19 +1,23 @@
-import { type PropsWithChildren, useRef, useState } from "react";
+import { type PropsWithChildren, useReducer, useRef } from "react";
 
-import { type AddressResult, AddressContext } from "./AddressContext";
+import { AddressContext, type AddressResult } from "./AddressContext";
+import { addressReducer, initialAddressState } from "./AddressReducer";
+
+import { useToast } from "@/features/toast/useToast.ts";
 
 export const AddressProvider = ({ children }: PropsWithChildren) => {
-    const [query, setQuery] = useState("");
-    const [results, setResults] = useState<AddressResult[]>([]);
-    const [address, setAddress] = useState("");
-    const [lat, setLat] = useState(41.8781);
-    const [lng, setLng] = useState(-87.6298);
+    const [state, dispatch] = useReducer(
+        addressReducer,
+        initialAddressState
+    );
 
     const abortRef = useRef<AbortController | null>(null);
     const debounceRef = useRef<number | null>(null);
 
+    const { toast } = useToast();
+
     const searchAddress = (value: string) => {
-        setQuery(value);
+        dispatch({ type: "SET_QUERY", payload: value });
 
         if (debounceRef.current) clearTimeout(debounceRef.current);
 
@@ -21,7 +25,7 @@ export const AddressProvider = ({ children }: PropsWithChildren) => {
             if (abortRef.current) abortRef.current.abort();
 
             if (value.length < 3) {
-                setResults([]);
+                dispatch({ type: "CLEAR_RESULTS" });
                 return;
             }
 
@@ -37,25 +41,34 @@ export const AddressProvider = ({ children }: PropsWithChildren) => {
                 );
 
                 const data = (await res.json()) as AddressResult[];
-                const sorted = data.sort((a, b) => (b.place_id as any) - (a.place_id as any));
-                setResults(sorted);
-            } catch (err) {
-                if ((err as any).name !== "AbortError") console.error(err);
+                const sorted = data.sort(
+                    (a, b) => Number(b.place_id) - Number(a.place_id)
+                );
+
+                dispatch({ type: "SET_RESULTS", payload: sorted });
+            } catch (addressError) {
+                const message = addressError instanceof Error ? addressError.message : "Unable to search for address";
+                toast({ title: "Address error", description: message, variant: "destructive" });
             }
         }, 300);
     };
 
     const selectAddress = (place: AddressResult) => {
-        setResults([]);
-        setQuery(place.display_name);
-        setAddress(place.display_name);
-        setLat(parseFloat(place.lat));
-        setLng(parseFloat(place.lon));
+        dispatch({ type: "SELECT_ADDRESS", payload: place });
+    };
+
+    const setAddress = (value: string) => {
+        dispatch({ type: "SET_ADDRESS", payload: value });
     };
 
     return (
         <AddressContext.Provider
-            value={{ query, results, lat, lng, address, searchAddress, selectAddress, setAddress }}
+            value={{
+                ...state,
+                searchAddress,
+                selectAddress,
+                setAddress,
+            }}
         >
             {children}
         </AddressContext.Provider>

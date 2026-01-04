@@ -1,6 +1,6 @@
 import { type PropsWithChildren, useState, useMemo, useCallback, useEffect } from "react";
 
-import { createCheckoutSessionForCart } from "@/api/payments";
+import { createOrderWithPayment } from "@/api/orders";
 import { CartContext, type CartContextValue, type CartItem, type DeliveryFormValues } from "./CartContext";
 import { loadCart, saveCart } from "./cartStorage";
 
@@ -10,8 +10,10 @@ export const CartProvider = ({children}: PropsWithChildren) => {
     const [items, setItems] = useState<CartItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const totalItems = useMemo(() => items.reduce((sum, i) => sum + i.quantity, 0), [items]);
+    const totalPrice = useMemo(() => items.reduce((sum, i) => sum + i.price * i.quantity, 0), [items]);
 
-    const {toast} = useToast();
+    const { toast } = useToast();
 
     useEffect(() => {
         try {
@@ -98,14 +100,13 @@ export const CartProvider = ({children}: PropsWithChildren) => {
     }, [toast]);
 
     const handleCheckout = useCallback(async (data: DeliveryFormValues) => {
-        // TODO: handle delivery data
         if (!items || items.length === 0) return;
 
         setLoading(true);
         setError(null);
 
         try {
-            const session = await createCheckoutSessionForCart(items);
+            const session = await createOrderWithPayment(items, data.fullName, data.address);
             if (!session.url) {
                 const message = "Unable to start checkout.";
                 setError(message);
@@ -124,9 +125,6 @@ export const CartProvider = ({children}: PropsWithChildren) => {
     }, [items, toast]);
 
     const clearError = useCallback(() => setError(null), []);
-
-    const totalItems = useMemo(() => items.reduce((sum, i) => sum + i.quantity, 0), [items]);
-    const totalPrice = useMemo(() => items.reduce((sum, i) => sum + i.price * i.quantity, 0), [items]);
 
     const value: CartContextValue = useMemo(
         () => ({
