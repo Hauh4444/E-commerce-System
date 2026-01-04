@@ -32,8 +32,8 @@ const SettingsPage = () => {
     return (
         <>
             <Header />
-            <main className="w-full min-h-screen bg-gradient-subtle flex flex-col items-center justify-start absolute top-0">
-                <ul className="w-[50%] mb-10 pt-28 flex flex-col items-center gap-6">
+            <main className="w-full min-h-[var(--main-height)] bg-gradient-subtle flex flex-col items-center justify-start">
+                <ul className="w-[50%] mb-10 pt-6 flex flex-col items-center gap-6">
                     <Card className="w-full">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">

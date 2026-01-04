@@ -17,11 +17,11 @@ export const ListsPage = () => {
     return (
         <>
             <Header />
-            <main className="w-full min-h-screen bg-gradient-subtle flex flex-col items-center justify-start absolute top-0">
+            <main className="w-full min-h-[var(--main-height)] bg-gradient-subtle flex flex-col items-center justify-start">
                 <Tabs
                     value={selectedList?.id || (isCreating ? "new" : "")}
                     onValueChange={handlers.handleSelectList}
-                    className="w-3/4 mb-10 pt-28"
+                    className="w-3/4 mb-10 pt-8"
                 >
                     <ListTabs
                         lists={lists}

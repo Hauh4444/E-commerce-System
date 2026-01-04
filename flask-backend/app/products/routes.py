@@ -1,7 +1,6 @@
 from http import HTTPStatus
 from flask import Blueprint, jsonify, request
 from pydantic import BaseModel, Field, constr, confloat, conint, ValidationError
-from urllib3.exceptions import HTTPWarning
 
 from app.extensions.mongo import serialize_id, serialize_document
 from app.auth import auth_required

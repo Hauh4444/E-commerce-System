@@ -1,5 +1,5 @@
 import { apiConfig, baseHeaders } from "@/config";
-import { handleResponseError } from "@/utils/api.ts";
+import { handleResponseError } from "@/utils/api";
 
 export type List = {
     id: string;

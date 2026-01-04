@@ -37,18 +37,23 @@ const Header = forwardRef<
     return (
         <header
             ref={ref}
-            className={cn("sticky top-0 z-50 w-full border-b-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85", props.className)}
+            className={cn(
+                "sticky top-0 z-[999999] w-full border-b-2 bg-header-background backdrop-blur-xl shadow-header-shadow supports-[backdrop-filter]:header-background",
+                props.className
+            )}
             {...props}
         >
-            <nav className="h-[80px] flex items-center justify-between px-8" aria-label="Main navigation">
-                <Link
-                    to="/"
-                    className="w-1/4 flex hover:opacity-80 transition-opacity"
-                >
-                    <h1 className="text-3xl font-extrabold bg-gradient-primary bg-clip-text text-transparent">
-                        Avento
-                    </h1>
-                </Link>
+            <nav className="h-[var(--header-height)] flex items-center justify-between px-8" aria-label="Main navigation">
+                <span className="w-1/4 flex">
+                    <Link
+                        to="/"
+                        className="w-fit hover:opacity-80 transition-opacity"
+                    >
+                        <h1 className="text-3xl font-extrabold bg-gradient-primary bg-clip-text text-transparent">
+                            Avento
+                        </h1>
+                    </Link>
+                </span>
 
                 <span className="flex grow relative">
                     <Input

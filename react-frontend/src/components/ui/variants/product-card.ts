@@ -1,13 +1,14 @@
 import { cva } from "class-variance-authority";
 
 export const productCardVariants = cva(
-    "h-56 flex border rounded-md overflow-hidden",
+    "flex border rounded-md overflow-hidden",
     {
         variants: {
             variant: {
-                search: "flex-row",
-                list: "flex-row",
-                cart: "flex-row",
+                search: "h-56 flex-row",
+                list: "h-56 flex-row",
+                cart: "h-56 flex-row",
+                compact: "h-32 flex-row",
             },
         },
         defaultVariants: {

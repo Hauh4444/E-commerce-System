@@ -43,8 +43,8 @@ const SearchPage = () => {
     return (
         <>
             <Header />
-            <main className="w-full min-h-screen bg-gradient-subtle flex flex-col items-center justify-start absolute top-0">
-                <ul className="w-3/4 mt-20 mb-8 space-y-6">
+            <main className="w-full min-h-[var(--main-height)] bg-gradient-subtle flex flex-col items-center justify-start">
+                <ul className="w-3/4 mb-8 space-y-6">
                     <li className="mt-6 pl-4 text-xl text-left">
                         {products ? products.length : 0} result{products && products.length != 1 && "s"} for "{query}":
                     </li>

@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 import { useCart } from "@/features/cart/useCart";
 
 import { Header } from "@/components/Header";
@@ -5,10 +7,11 @@ import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 
 const CartPage = () => {
-    const { items, totalItems, totalPrice, clearCart, handleCheckout } = useCart();
+    const navigate = useNavigate();
+    const { items, totalItems, totalPrice, clearCart } = useCart();
 
     const handleClearCart = () => {
-        // We have the window confirm here instead of in useCart since we call clear cart after checkout in HomePage component
+        // We have the window confirm here instead of in useCart since we call clear cart after checkout in HomePage
         const confirmed = window.confirm("Are you sure you want to clear your cart?");
         if (!confirmed) return;
 
@@ -18,9 +21,9 @@ const CartPage = () => {
     return (
         <>
             <Header />
-            <main className="w-full min-h-screen bg-gradient-subtle flex flex-col items-center justify-start absolute top-0">
+            <main className="w-full min-h-[var(--main-height)] bg-gradient-subtle flex flex-col items-center justify-start">
                 {items && totalItems > 0 ? (
-                    <ul className="w-3/4 mt-20 mb-8 mx-auto space-y-6">
+                    <ul className="w-3/4 mb-8 mx-auto space-y-6">
                         <li className="mt-6 pl-4 text-xl text-left">
                             Your cart ({totalItems} item{totalItems != 1 && "s"}):
                         </li>
@@ -44,7 +47,7 @@ const CartPage = () => {
                             <Button
                                 variant="secondary"
                                 className="w-auto px-6 py-2 text-xl hover:opacity-80 transition-opacity"
-                                onClick={handleCheckout}
+                                onClick={() => navigate("/order")}
                                 title="Checkout"
                             >
                                 PROCEED TO CHECKOUT
@@ -52,7 +55,7 @@ const CartPage = () => {
                         </li>
                     </ul>
                 ) : (
-                    <h1 className="my-auto text-3xl text-foreground font-bold">
+                    <h1 className="my-auto pb-[var(--header-height)] text-3xl text-foreground font-bold">
                         Your cart is empty
                     </h1>
                 )}

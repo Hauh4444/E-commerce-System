@@ -75,7 +75,7 @@ const ProductPage = () => {
     return (
         <>
             <Header />
-            <main className="w-full bg-gradient-subtle flex flex-col items-center justify-start">
+            <main className="w-full min-h-[var(--main-height)] bg-gradient-subtle flex flex-col items-center justify-start">
                 {loadingProduct ? (
                     <h2 className="my-8 text-2xl font-bold">Loading product...</h2>
                 ) : (product && (
@@ -184,11 +184,13 @@ const ProductPage = () => {
                             </section>
                         </article>
 
-                        <article className="w-full flex items-stretch justify-center border-b-2" ref={reviewsRef}>
-                            <ul className="p-16 flex flex-col basis-[50%] gap-4 border-r">
-                                {loadingProductReviews ? (
-                                    <h2 className="my-8 text-2xl font-bold">Loading product reviews...</h2>
-                                ) : (productReviews && productReviews.map((review, index) => (
+                        <ul className="w-1/2 px-auto py-16 flex flex-col basis-[50%] gap-4">
+                            {loadingProductReviews ? (
+                                <h2 className="my-8 text-2xl font-bold">
+                                    Loading product reviews...
+                                </h2>
+                            ) : productReviews && productReviews.length > 0 ? (
+                                productReviews.map((review, index) => (
                                     <li key={index} className="w-full">
                                         <span className="flex items-center">
                                             <figure className="h-fit m-0">
@@ -197,10 +199,11 @@ const ProductPage = () => {
                                                     {product.average_review.toFixed(1)} out of 5 stars
                                                 </figcaption>
                                             </figure>
-                                            <h2 className="w-fit ml-4 text-2xl font-bold">
+                                            <h2 className="w-fit ml-4 text-xl font-bold">
                                                 {review.title}
                                             </h2>
                                         </span>
+
                                         <h3 className="w-fit text-base text-muted-foreground font-light">
                                             {review.created_at && new Date(review.created_at).toLocaleString(undefined, {
                                                 weekday: "long",
@@ -212,17 +215,18 @@ const ProductPage = () => {
                                                 hour12: false
                                             })}
                                         </h3>
+
                                         <p className="mt-2 text-left text-lg">
                                             {review.description}
                                         </p>
                                     </li>
-                                )))}
-                            </ul>
-
-                            <section className="p-16 basis-[50%] border-l">
-
-                            </section>
-                        </article>
+                                ))
+                            ) : (
+                                <h2 className="my-8 text-2xl font-bold">
+                                    No product reviews
+                                </h2>
+                            )}
+                        </ul>
                     </>
                 ))}
             </main>

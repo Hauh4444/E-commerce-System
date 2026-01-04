@@ -9,6 +9,13 @@ export type CartItem = {
     images: string[];
 };
 
+export interface DeliveryFormValues {
+    fullName: string;
+    address: string;
+    lat: number;
+    lng: number;
+}
+
 export type CartContextValue = {
     items: CartItem[];
     loading: boolean;
@@ -19,7 +26,7 @@ export type CartContextValue = {
     removeItem: (id: string) => void;
     updateQuantity: (id: string, quantity: number) => void;
     clearCart: () => void;
-    handleCheckout: () => Promise<void>;
+    handleCheckout: (data: DeliveryFormValues) => Promise<void>;
     clearError: () => void;
 };
 

@@ -1,7 +1,7 @@
 import { type PropsWithChildren, useState, useMemo, useCallback, useEffect } from "react";
 
 import { createCheckoutSessionForCart } from "@/api/payments";
-import { CartContext, type CartContextValue, type CartItem } from "./CartContext";
+import { CartContext, type CartContextValue, type CartItem, type DeliveryFormValues } from "./CartContext";
 import { loadCart, saveCart } from "./cartStorage";
 
 import { useToast } from "@/features/toast/useToast";
@@ -97,7 +97,8 @@ export const CartProvider = ({children}: PropsWithChildren) => {
         }
     }, [toast]);
 
-    const handleCheckout = useCallback(async () => {
+    const handleCheckout = useCallback(async (data: DeliveryFormValues) => {
+        // TODO: handle delivery data
         if (!items || items.length === 0) return;
 
         setLoading(true);

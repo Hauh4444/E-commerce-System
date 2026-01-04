@@ -19,7 +19,7 @@ const HomePage = () => {
     return (
         <>
             <Header />
-            <main className="w-full min-h-screen bg-gradient-subtle flex flex-col items-center justify-start absolute top-0">
+            <main className="w-full min-h-[var(--main-height)] bg-gradient-subtle flex flex-col items-center justify-start">
                 <h1 className="my-auto text-3xl text-foreground font-bold">
                     {user && `Welcome back ${user?.name}!`}
                 </h1>

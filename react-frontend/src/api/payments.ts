@@ -1,7 +1,7 @@
 import { apiConfig, baseHeaders } from "@/config";
 
 import { type CartItem } from "@/features/cart/CartContext";
-import { handleResponseError } from "@/utils/api.ts";
+import { handleResponseError } from "@/utils/api";
 
 export type CheckoutItem = {
     product_name: string;

@@ -36,7 +36,7 @@ class ProductsRepository:
         return self.products.find_one({"_id": parse_object_id(product_id)})
 
     def get_product_reviews(self, product_id: str):
-        return list(self.product_reviews.find({"product_id": parse_object_id(product_id)}))
+        return list(self.product_reviews.find({"product_id": parse_object_id(product_id)}).sort("created_at", -1).limit(10))
 
     def create_product(self, user_id: str, product_data: dict):
         product_data.update({

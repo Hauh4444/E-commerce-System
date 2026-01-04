@@ -4,6 +4,9 @@
 
 @layer base {
     :root {
+        --header-height: 80px;
+        --main-height: calc(100vh - 82px);
+
         --radius: 0.75rem;
         --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -13,6 +16,9 @@
     .light {
         --background: 0 0% 99%;
         --foreground: 230 15% 15%;
+
+        --header-background: hsl(0 0% 100% / 0.10);
+        --header-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
 
         --card: 0 0% 100%;
         --card-foreground: 230 15% 15%;
@@ -55,6 +61,9 @@
     .dark {
         --background: 230 15% 7%;
         --foreground: 0 0% 95%;
+
+        --header-background: hsl(0 0% 0% / 0.30);
+        --header-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
 
         --card: 230 15% 12%;
         --card-foreground: 0 0% 95%;
@@ -110,32 +119,5 @@
         -webkit-text-fill-color: hsl(var(--foreground)) !important;
         caret-color: hsl(var(--foreground)) !important;
         transition: background-color 5000s ease-in-out 0s;
-    }
-
-    [data-sonner-toaster] {
-        position: fixed !important;
-        bottom: 20px !important;
-        right: 220px !important;
-        top: auto !important;
-        left: auto !important;
-        transform: none !important;
-        z-index: 999999 !important;
-        width: auto !important;
-        max-width: 320px !important;
-    }
-
-    [data-sonner-toast] {
-        width: fit-content !important;
-        min-width: 200px !important;
-        max-width: 320px !important;
-    }
-
-    .toaster {
-        position: fixed !important;
-        bottom: 20px !important;
-        right: 220px !important;
-        top: auto !important;
-        left: auto !important;
-        z-index: 999999 !important;
     }
 }
